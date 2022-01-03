@@ -1,5 +1,3 @@
-import React from "react";
-
 const Remaining = (): JSX.Element => (
 	<div className="alert alert-success">
 		<span>

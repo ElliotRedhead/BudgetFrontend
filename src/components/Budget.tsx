@@ -1,5 +1,3 @@
-import React from "react";
-
 const Budget = (): JSX.Element => (
 	<div className="alert alert-secondary">
 		<span>

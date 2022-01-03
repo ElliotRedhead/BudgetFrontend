@@ -1,5 +1,3 @@
-import React from "react";
-
 const ExpenseTotal = (): JSX.Element => (
 	<div className="alert alert-primary">
 		<span>
