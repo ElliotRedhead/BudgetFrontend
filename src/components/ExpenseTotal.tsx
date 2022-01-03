@@ -1,11 +1,11 @@
 import React from "react";
 
-const ExpenseTotal = (): JSX.Element => {
-	return (
-		<div className="alert alert-primary">
-			<span>Spent so far: £960</span>
-		</div>
-	);
-};
+const ExpenseTotal = (): JSX.Element => (
+	<div className="alert alert-primary">
+		<span>
+			Spent so far: £570
+		</span>
+	</div>
+);
 
 export default ExpenseTotal;
