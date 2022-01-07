@@ -1,0 +1,68 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createContext, ReactChild, ReactFragment, ReactPortal, useReducer } from "react";
+
+const AppReducer = (state:InitialStateType, action: { type: any; }) => {
+	switch (action.type){
+	default:
+		return state;
+	}
+};
+
+interface ContextType {
+	state: InitialStateType;
+	dispatch: React.Dispatch<any>;
+}
+
+interface ExpenseType {
+	id: number;
+	name: string;
+	cost: number;
+}
+
+interface InitialStateType {
+	budget: number;
+	expenses: ExpenseType[];
+} 
+
+const initialState = {
+	budget: 2000,
+	expenses: [
+		{
+			id: 123123,
+			name: "Shopping",
+			cost: 50
+		},
+		{
+			id: 123124,
+			name: "Holiday",
+			cost: 300
+		},
+		{
+			id: 123125,
+			name: "Transportation",
+			cost: 70
+		},
+		{
+			id: 123126,
+			name: "Fuel",
+			cost: 40
+		},
+		{
+			id: 123127,
+			name: "Utilities",
+			cost: 110
+		}
+	]
+};
+
+export const AppContext = createContext({} as ContextType);
+
+
+export const AppProvider = (props: { children: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) => {
+	const [state, dispatch] = useReducer(AppReducer, initialState);
+
+	return (
+		<AppContext.Provider value={{ state, dispatch }}>
+			{props.children}
+		</AppContext.Provider>);
+};

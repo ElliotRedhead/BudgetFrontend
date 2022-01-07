@@ -1,13 +1,13 @@
 import { TiDelete } from "react-icons/ti";
 
-interface expenseProps {
+interface ExpenseProps {
 	key:number,
 	id:number,
 	name:string,
 	cost:number
 }
 
-const ExpenseItem = (props:expenseProps): JSX.Element => (
+const ExpenseItem = (props:ExpenseProps): JSX.Element => (
 	<li className="list-group-item d-flex justify-content-between align-items-center">
 		{props.name}
 		<div>
