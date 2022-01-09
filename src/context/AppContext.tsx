@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, ReactChild, ReactFragment, ReactPortal, useReducer } from "react";
 
 const AppReducer = (state:InitialStateType, action: { type: any; }) => {
@@ -58,7 +57,7 @@ const initialState = {
 export const AppContext = createContext({} as ContextType);
 
 
-export const AppProvider = (props: { children: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) => {
+export const AppProvider = (props: { children: ReactChild | ReactFragment }) => {
 	const [state, dispatch] = useReducer(AppReducer, initialState);
 
 	return (

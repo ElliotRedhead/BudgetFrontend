@@ -1,9 +1,14 @@
-const Budget = (): JSX.Element => (
-	<div className="alert alert-secondary">
-		<span>
-			Budget: £2000
-		</span>
-	</div>
-);
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
+const Budget = (): JSX.Element => {
+	const { state } = useContext(AppContext);
+	return (
+		<div className="alert alert-secondary">
+			<span>
+				{`Budget: £${state.budget}`}
+			</span>
+		</div>
+	);
+};
 export default Budget;
