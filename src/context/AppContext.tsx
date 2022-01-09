@@ -1,7 +1,12 @@
-import { createContext, ReactChild, ReactFragment, ReactPortal, useReducer } from "react";
+import { createContext, ReactChild, ReactFragment, useReducer } from "react";
 
-const AppReducer = (state:InitialStateType, action: { type: any; }) => {
+const AppReducer = (state:InitialStateType, action: { type: string; payload:ExpenseType }) => {
 	switch (action.type){
+	case "ADD_EXPENSE":
+		return {
+			...state,
+			expenses: [...state.expenses, action.payload]
+		};
 	default:
 		return state;
 	}
