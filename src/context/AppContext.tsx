@@ -1,4 +1,5 @@
 import { createContext, ReactChild, ReactFragment, useReducer } from "react";
+import { ExpenseType } from "../types/ExpenseType";
 
 const AppReducer = (state:InitialStateType, action: { type: string; payload:ExpenseType }) => {
 	switch (action.type){
@@ -15,12 +16,6 @@ const AppReducer = (state:InitialStateType, action: { type: string; payload:Expe
 interface ContextType {
 	state: InitialStateType;
 	dispatch: React.Dispatch<any>;
-}
-
-interface ExpenseType {
-	id: number;
-	name: string;
-	cost: number;
 }
 
 interface InitialStateType {
