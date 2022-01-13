@@ -1,12 +1,17 @@
 import { createContext, ReactChild, ReactFragment, useReducer } from "react";
 import { ExpenseType } from "../types/ExpenseType";
 
-const AppReducer = (state:InitialStateType, action: { type: string; payload:ExpenseType }) => {
+const AppReducer = (state:InitialStateType, action: { type:string; payload:any }) => {
 	switch (action.type){
 	case "ADD_EXPENSE":
 		return {
 			...state,
 			expenses: [...state.expenses, action.payload]
+		};
+	case "DELETE_EXPENSE":
+		return {
+			...state,
+			expenses: state.expenses.filter(expense => expense.id !== action.payload)
 		};
 	default:
 		return state;
