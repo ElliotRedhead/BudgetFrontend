@@ -52,7 +52,7 @@ const ExpenseFormModal = (props:any):JSX.Element => {
 										type="text"
 										className="form-control"
 										id="name"
-										value={name}
+										value={modalContext.expenseName}
 										onChange={event => setName(event.target.value)} />
 								</div>
 								<div className="col-sm">
@@ -64,7 +64,7 @@ const ExpenseFormModal = (props:any):JSX.Element => {
 										type="text"
 										className="form-control"
 										id="cost"
-										value={cost}
+										value={modalContext.expenseCost}
 										onChange={event => setCost(event.target.value)} />
 								</div>
 							</div>

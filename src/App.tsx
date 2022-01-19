@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/index.scss";
 
@@ -11,14 +11,31 @@ import { ExpenseDataProvider } from "./context/ExpenseDataContext";
 import ModalContext from "./context/ModalContext";
 
 const App = (): JSX.Element => {
+	const modalContext = useContext(ModalContext);
 	const [modalVisibility, setModalVisibility] = useState(false);
 	const toggleModalVisibility = () => {
 		setModalVisibility(!modalVisibility);
 	};
+	const [expenseName, setExpenseName] = useState(modalContext.expenseName);
+	const [expenseCost, setExpenseCost] = useState(modalContext.expenseCost);
+	const expenseNameSetter = (name:string) => {
+		setExpenseName(name);
+	};
+	const expenseCostSetter = (cost:number) => {
+		setExpenseCost(cost);
+	};
+	const ModalContextProviderValues = {
+		modalVisibility,
+		toggleModalVisibility,
+		expenseName,
+		expenseNameSetter,
+		expenseCost,
+		expenseCostSetter
+	};
 
 	return (
 		<ExpenseDataProvider>
-			<ModalContext.Provider value={{ modalVisibility, toggleModalVisibility }}>
+			<ModalContext.Provider value={ ModalContextProviderValues }>
 				<ExpenseFormModal />
 				<div className="container">
 					<h1 className="mt-3">

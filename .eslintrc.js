@@ -44,7 +44,8 @@ module.exports = {
 					"error",
 					"always"
 				],
-				
+				"no-empty-function": "off",
+				"@typescript-eslint/no-empty-function": "off",
 				"array-bracket-spacing": 1,
 				"arrow-body-style": [1, "as-needed"],
 				"arrow-parens": [1, "as-needed"],
@@ -123,7 +124,6 @@ module.exports = {
 			"error",
 			"always"
 		],
-		
 		"array-bracket-spacing": 1,
 		"arrow-body-style": [1, "as-needed"],
 		"arrow-parens": [1, "as-needed"],

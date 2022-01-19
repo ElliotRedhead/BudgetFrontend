@@ -10,8 +10,6 @@ interface ExpenseProps {
 	cost:number
 }
 
-
-
 const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 	const [editButtonVisibility, setEditButtonVisibility] = useState(false);
 	const { dispatch } = useContext(ExpenseDataContext);
@@ -19,8 +17,9 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 
 	const editOnClickHandler = () => {
 		setEditButtonVisibility(false);
+		modalContext.expenseNameSetter(props.name);
+		modalContext.expenseCostSetter(props.cost);
 		modalContext.toggleModalVisibility();
-		console.log(modalContext);
 	};
 
 	const handleDeleteExpense = () => {
