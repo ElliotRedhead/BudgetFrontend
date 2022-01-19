@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useMemo } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/index.scss";
 
@@ -24,14 +24,19 @@ const App = (): JSX.Element => {
 	const expenseCostSetter = (cost:number) => {
 		setExpenseCost(cost);
 	};
-	const ModalContextProviderValues = {
-		modalVisibility,
-		toggleModalVisibility,
-		expenseName,
-		expenseNameSetter,
-		expenseCost,
-		expenseCostSetter
-	};
+
+	const ModalContextProviderValues = useMemo(() => {
+		const ModalContextProviderValues = {
+			modalVisibility,
+			toggleModalVisibility,
+			expenseName,
+			expenseNameSetter,
+			expenseCost,
+			expenseCostSetter
+		};
+		return ModalContextProviderValues;
+	}, [modalVisibility, expenseName, expenseCost]);
+
 
 	return (
 		<ExpenseDataProvider>
