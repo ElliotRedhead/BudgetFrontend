@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
+import { ExpenseDataContext } from "../context/ExpenseDataContext";
 
 const Budget = (): JSX.Element => {
-	const { state } = useContext(AppContext);
+	const { state } = useContext(ExpenseDataContext);
 	return (
 		<div className="alert alert-secondary">
 			<span>

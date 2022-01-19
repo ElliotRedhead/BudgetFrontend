@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
+import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import { ExpenseType } from "../types/ExpenseType";
 
 const ExpenseTotal = (): JSX.Element => {
-	const { state } = useContext(AppContext);
+	const { state } = useContext(ExpenseDataContext);
 	const totalExpenses = state.expenses.reduce((total:number, item:ExpenseType) => total + item.cost, 0);
 
 	return (

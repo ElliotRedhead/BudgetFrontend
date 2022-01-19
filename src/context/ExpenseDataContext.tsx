@@ -1,7 +1,7 @@
 import { createContext, ReactChild, ReactFragment, useReducer } from "react";
 import { ExpenseType } from "../types/ExpenseType";
 
-const AppReducer = (state:InitialStateType, action: { type:string; payload:any }) => {
+const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:any }) => {
 	switch (action.type){
 	case "ADD_EXPENSE":
 		return {
@@ -59,14 +59,14 @@ const initialState = {
 	]
 };
 
-export const AppContext = createContext({} as ContextType);
+export const ExpenseDataContext = createContext({} as ContextType);
 
 
-export const AppProvider = (props: { children: ReactChild | ReactFragment }) => {
-	const [state, dispatch] = useReducer(AppReducer, initialState);
+export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragment }) => {
+	const [state, dispatch] = useReducer(ExpenseDataReducer, initialState);
 
 	return (
-		<AppContext.Provider value={{ state, dispatch }}>
+		<ExpenseDataContext.Provider value={{ state, dispatch }}>
 			{props.children}
-		</AppContext.Provider>);
+		</ExpenseDataContext.Provider>);
 };

@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
+import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ExpenseItem from "./ExpenseItem";
 
 const ExpenseList = (): JSX.Element => {
-	const { state } = useContext(AppContext); 
+	const { state } = useContext(ExpenseDataContext); 
 
 	return (
 		<ul className="list-group">
