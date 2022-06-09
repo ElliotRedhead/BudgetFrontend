@@ -4,10 +4,23 @@ import { ExpenseType } from "../types/ExpenseType";
 const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:any }) => {
 	switch (action.type){
 	case "ADD_EXPENSE":
-		return {
-			...state,
-			expenses: [...state.expenses, action.payload]
-		};
+		state.expenses.forEach((expense, index) => {
+			// Update existing expense
+			if (expense.id === action.payload.id) {
+				state.expenses[index] = action.payload;
+				return {
+					...state,
+					expenses: state.expenses
+				};
+			}
+			// Add new expense
+			return {
+				...state,
+				expenses: [...state.expenses, action.payload]
+			};
+		});
+
+		/* no-fallthrough */
 	case "DELETE_EXPENSE":
 		return {
 			...state,
@@ -32,27 +45,27 @@ const initialState = {
 	budget: 2000,
 	expenses: [
 		{
-			id: 123123,
+			id: "ecb52fa2-1b85-4eca-93b4-a6f9e97c75b0",
 			name: "Shopping",
 			cost: 50
 		},
 		{
-			id: 123124,
+			id: "9d3916f3-fa18-414a-9b51-e4814255aeb3",
 			name: "Holiday",
 			cost: 300
 		},
 		{
-			id: 123125,
+			id: "d5cbef88-f972-4bbc-94ff-ab59bff1a9aa",
 			name: "Transportation",
 			cost: 70
 		},
 		{
-			id: 123126,
+			id: "c123bc53-97b9-4e9f-a088-b3557fbe8b85",
 			name: "Fuel",
 			cost: 40
 		},
 		{
-			id: 123127,
+			id: "0a5e3c88-7fe9-447f-8b4b-27f10d2a98cc",
 			name: "Utilities",
 			cost: 110
 		}

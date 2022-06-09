@@ -4,6 +4,8 @@ import { createContext } from "react";
 const ModalContext = createContext({
 	modalVisibility: false,
 	toggleModalVisibility: () => {},
+	expenseId: "",
+	expenseIdSetter: (id:string) => {},
 	expenseName: "",
 	expenseNameSetter: (name:string) => {},
 	expenseCost: 0,

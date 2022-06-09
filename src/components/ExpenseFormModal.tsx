@@ -1,26 +1,34 @@
-import { SyntheticEvent, useContext, useState } from "react";
+import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import { v4 as uuidv4 } from "uuid";
 
-const ExpenseFormModal = (props:any):JSX.Element => {
+const ExpenseFormModal = ():JSX.Element => {
 	const { dispatch } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
-	const [name, setName] = useState("");
-	const [cost, setCost] = useState("");
+	const [name, setName] = useState(modalContext.expenseName);
+	const [cost, setCost] = useState<number | null>(modalContext.expenseCost);
+	const expenseId = modalContext.expenseId;
+
+	useEffect(() => {
+		setName(modalContext.expenseName);
+		setCost(modalContext.expenseCost);
+	}, [modalContext.modalVisibility]);
 
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
 		const expense = {
-			id: props.expenseId || uuidv4(),
+			id: expenseId || uuidv4(),
 			name: name,
-			cost: parseInt(cost)
+			cost: cost
 		};
 
 		dispatch({
 			type: "ADD_EXPENSE",
 			payload: expense
 		});
+
+		modalContext.toggleModalVisibility();
 	};
 
 	return (
@@ -38,7 +46,9 @@ const ExpenseFormModal = (props:any):JSX.Element => {
 							className="btn-close"
 							data-bs-dismiss="modal"
 							aria-label="Close"
-							onClick={modalContext.toggleModalVisibility} />
+							onClick={() => {
+								modalContext.toggleModalVisibility();
+							}} />
 					</div>
 					<div className="modal-body">
 						<form onSubmit={onSubmit}>
@@ -52,7 +62,7 @@ const ExpenseFormModal = (props:any):JSX.Element => {
 										type="text"
 										className="form-control"
 										id="name"
-										value={modalContext.expenseName}
+										value={name}
 										onChange={event => setName(event.target.value)} />
 								</div>
 								<div className="col-sm">
@@ -64,27 +74,29 @@ const ExpenseFormModal = (props:any):JSX.Element => {
 										type="text"
 										className="form-control"
 										id="cost"
-										value={modalContext.expenseCost}
-										onChange={event => setCost(event.target.value)} />
+										value={cost ? cost.toString() : 0}
+										onChange={event => setCost(parseInt(event.target.value))} />
 								</div>
 							</div>
 							<div className="row mt-3">
 								<div className="col-sm" />
 							</div>
+							<div className="modal-footer">
+								<button
+									type="button"
+									className="btn btn-secondary"
+									data-bs-dismiss="modal"
+									onClick={() => {
+										modalContext.toggleModalVisibility();
+									}}>
+									Close
+								</button>
+								<input
+									type="submit"
+									className="btn btn-primary"
+									value="Save expense" />
+							</div>
 						</form>
-						<div className="modal-footer">
-							<button
-								type="button"
-								className="btn btn-secondary"
-								data-bs-dismiss="modal">
-								Close
-							</button>
-							<button
-								type="submit"
-								className="btn btn-primary">
-								Save changes
-							</button>
-						</div>
 					</div>
 				</div>
 			</div>

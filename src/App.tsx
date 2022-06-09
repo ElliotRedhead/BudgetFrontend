@@ -16,8 +16,12 @@ const App = (): JSX.Element => {
 	const toggleModalVisibility = () => {
 		setModalVisibility(!modalVisibility);
 	};
+	const [expenseId, setExpenseId] = useState(modalContext.expenseId);
 	const [expenseName, setExpenseName] = useState(modalContext.expenseName);
 	const [expenseCost, setExpenseCost] = useState(modalContext.expenseCost);
+	const expenseIdSetter = (id:string) => {
+		setExpenseId(id);
+	};
 	const expenseNameSetter = (name:string) => {
 		setExpenseName(name);
 	};
@@ -29,13 +33,15 @@ const App = (): JSX.Element => {
 		const ModalContextProviderValues = {
 			modalVisibility,
 			toggleModalVisibility,
+			expenseId,
+			expenseIdSetter,
 			expenseName,
 			expenseNameSetter,
 			expenseCost,
 			expenseCostSetter
 		};
 		return ModalContextProviderValues;
-	}, [modalVisibility, expenseName, expenseCost]);
+	}, [modalVisibility, expenseId, expenseName, expenseCost]);
 
 
 	return (
