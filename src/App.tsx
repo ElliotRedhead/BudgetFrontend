@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/index.scss";
 
 import Budget from "./components/Budget";
+import ExpensePie from "./components/ExpensePie";
 import Remaining from "./components/Remaining";
 import ExpenseTotal from "./components/ExpenseTotal";
 import ExpenseList from "./components/ExpenseList";
@@ -71,6 +72,9 @@ const App = (): JSX.Element => {
 							<ExpenseList />
 						</div>
 					</div>
+				</div>
+				<div className="vh-100">
+					<ExpensePie />
 				</div>
 			</ModalContext.Provider>
 		</ExpenseDataProvider>
