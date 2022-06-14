@@ -73,6 +73,18 @@ const App = (): JSX.Element => {
 						</div>
 					</div>
 				</div>
+				<div className="container">
+					<button
+						type="button"
+						className="btn btn-primary mt-2"
+						data-bs-dismiss="modal"
+						aria-label="Open"
+						onClick={() => {
+							toggleModalVisibility();
+						}}>
+						Add new expense
+					</button>
+				</div>
 				<div className="vh-100">
 					<ExpensePie />
 				</div>
