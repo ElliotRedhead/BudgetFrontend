@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from "chart.js";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import { colourGenerator } from "../utilities/colourGenerator";
 import { colourAlphaOffset } from "../utilities/colourAlphaOffset";
@@ -25,12 +25,33 @@ const ExpensePie = () => {
 			}
 		]
 	};
+	
+	const options:ChartOptions = {
+		plugins: {
+			legend: {
+				labels: {
+					font: {
+						size: 12
+					}
+				}
+			},
+			tooltip: {
+				bodyFont: {
+					size: 16
+				}
+			}
+		}
+
+		
+	};
+ 
 	return (
 		<div
 			className="h-100 d-flex flex-column justify-content-center align-content-center"
 			style={{ "height": "100vh" }}>
 			<Pie 
 				id="expensesPie"
+				options={options}
 				data={pieData} />
 		</div>
 	);
