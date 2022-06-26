@@ -1,38 +1,33 @@
 import { createContext, ReactChild, ReactFragment, useReducer } from "react";
 import { ExpenseType } from "../types/ExpenseType";
 
-const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:any }) => {
+const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:ExpenseType }) => {
 	let existingExpense = false;
 	switch (action.type){
 	case "ADD_EXPENSE":
-		// state.expenses.push(action.payload);
 		state.expenses.forEach((expense, index) => {
 			// Update existing expense
 			if (expense.id === action.payload.id) {
 				existingExpense = true;
 				state.expenses[index] = action.payload;
 			}
-			// can this be moved out of loop?
-			return {
-				...state,
-				expenses: state.expenses
-			};
 		});
 
 		if (!existingExpense){
 			// Add new expense
 			state.expenses.push(action.payload);
-			return {
-				...state,
-				expenses: state.expenses
-			};
 		}
+
+		return {
+			...state,
+			expenses: state.expenses
+		};
 
 		/* no-fallthrough */
 	case "DELETE_EXPENSE":
 		return {
 			...state,
-			expenses: state.expenses.filter(expense => expense.id !== action.payload)
+			expenses: state.expenses.filter(expense => expense.id !== action.payload.id)
 		};
 	default:
 		return state;
