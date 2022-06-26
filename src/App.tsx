@@ -13,6 +13,12 @@ import ModalContext from "./context/ModalContext";
 
 const App = (): JSX.Element => {
 	const modalContext = useContext(ModalContext);
+	const resetContext = () => {
+		setExpenseId("");
+		setExpenseName("");
+		setExpenseCost(0);
+	};
+
 	const [modalVisibility, setModalVisibility] = useState(false);
 	const toggleModalVisibility = () => {
 		setModalVisibility(!modalVisibility);
@@ -32,6 +38,7 @@ const App = (): JSX.Element => {
 
 	const ModalContextProviderValues = useMemo(() => {
 		const ModalContextProviderValues = {
+			resetContext,
 			modalVisibility,
 			toggleModalVisibility,
 			expenseId,

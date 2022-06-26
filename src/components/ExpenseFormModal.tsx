@@ -2,12 +2,13 @@ import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import { v4 as uuidv4 } from "uuid";
+import { ExpenseType } from "../types/ExpenseType";
 
 const ExpenseFormModal = ():JSX.Element => {
 	const { dispatch } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 	const [name, setName] = useState(modalContext.expenseName);
-	const [cost, setCost] = useState<number | null>(modalContext.expenseCost);
+	const [cost, setCost] = useState(modalContext.expenseCost);
 	const expenseId = modalContext.expenseId;
 
 	useEffect(() => {
@@ -17,7 +18,7 @@ const ExpenseFormModal = ():JSX.Element => {
 
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
-		const expense = {
+		const expense:ExpenseType = {
 			id: expenseId || uuidv4(),
 			name: name,
 			cost: cost
@@ -48,6 +49,7 @@ const ExpenseFormModal = ():JSX.Element => {
 							aria-label="Close"
 							onClick={() => {
 								modalContext.toggleModalVisibility();
+								modalContext.resetContext();
 							}} />
 					</div>
 					<div className="modal-body">
@@ -74,7 +76,7 @@ const ExpenseFormModal = ():JSX.Element => {
 										type="text"
 										className="form-control"
 										id="cost"
-										value={cost ? cost.toString() : 0}
+										value={cost && cost > 0 ? cost.toString() : ""}
 										onChange={event => setCost(parseInt(event.target.value))} />
 								</div>
 							</div>
@@ -88,6 +90,7 @@ const ExpenseFormModal = ():JSX.Element => {
 									data-bs-dismiss="modal"
 									onClick={() => {
 										modalContext.toggleModalVisibility();
+										modalContext.resetContext();
 									}}>
 									Close
 								</button>
