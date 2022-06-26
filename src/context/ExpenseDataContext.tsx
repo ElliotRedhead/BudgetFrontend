@@ -2,26 +2,34 @@ import { createContext, ReactChild, ReactFragment, useReducer } from "react";
 import { ExpenseType } from "../types/ExpenseType";
 
 const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:ExpenseType }) => {
+	const payloadValidation = (payload:ExpenseType) => (
+		typeof(payload.id) === "string" &&
+		typeof(payload.name) === "string" &&
+		typeof(payload.name) === "number"
+	);
+
 	let existingExpense = false;
 	switch (action.type){
 	case "ADD_EXPENSE":
-		state.expenses.forEach((expense, index) => {
+		if (payloadValidation(action.payload)){
+			state.expenses.forEach((expense, index) => {
 			// Update existing expense
-			if (expense.id === action.payload.id) {
-				existingExpense = true;
-				state.expenses[index] = action.payload;
-			}
-		});
+				if (expense.id === action.payload.id) {
+					existingExpense = true;
+					state.expenses[index] = action.payload;
+				}
+			});
 
-		if (!existingExpense){
+			if (!existingExpense){
 			// Add new expense
-			state.expenses.push(action.payload);
-		}
+				state.expenses.push(action.payload);
+			}
 
-		return {
-			...state,
-			expenses: state.expenses
-		};
+			return {
+				...state,
+				expenses: state.expenses
+			};
+		}
 
 		/* no-fallthrough */
 	case "DELETE_EXPENSE":
