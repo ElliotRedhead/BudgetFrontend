@@ -1,39 +1,24 @@
 import { useState } from "react";
-import axios, { AxiosRequestHeaders } from "axios";
-
-type Methods = "head" | "options" | "put" | "post" | "patch" | "delete" | "get";
-
-interface axiosParams {
-	url: string,
-	method: Methods,
-	data: object,
-	headers: AxiosRequestHeaders,
-}
-
-interface authResponse {
-	access: string,
-	refresh: string
-}
-
-type APIResponse = authResponse
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse  } from "axios";
 
 const useAxios = () => {
-	const [response, setResponse] = useState<APIResponse|null>(null);
-	const [error, setError] = useState("");
+	const [response, setResponse] = useState<AxiosResponse>();
+	const [error, setError] = useState<AxiosError>();
 	const [loading, setLoading] = useState(true);
 
-	const operation = async (params:axiosParams) => {
+	const operation = async (params:AxiosRequestConfig) => {
 		try {
 			setLoading(true);
 			const result = await axios.request({ ...params });
-			setResponse(result.data);
+			setResponse(result);
 		} catch (error){
-			setError(String(error));
+			if (error instanceof AxiosError) {
+				setError(error);
+			}
 		} finally {
 			setLoading(false);
 		}
 	};
-
 
 	return { response, error, loading, operation };
 };

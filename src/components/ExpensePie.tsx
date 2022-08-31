@@ -9,10 +9,10 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const ExpensePie = () => {
 	const { state: expensesData } = useContext(ExpenseDataContext);
-	const labels = expensesData.expenses.map(expense => expense.name);
-	const costs = expensesData.expenses.map(expense => expense.cost);
-	const backgroundColours = expensesData.expenses.map((_, index) => colourGenerator(expensesData.expenses.length, index));
-	const borderColours = backgroundColours.map(colourHex => (colourAlphaOffset(colourHex, 0.3)));
+	const labels = expensesData.expenses?.map(expense => expense.name);
+	const costs = expensesData.expenses?.map(expense => expense.cost);
+	const backgroundColours = expensesData.expenses?.map((_, index) => colourGenerator(expensesData.expenses.length, index));
+	const borderColours = backgroundColours?.map(colourHex => (colourAlphaOffset(colourHex, 0.3)));
 	
 	const pieData = {
 		labels: labels,
