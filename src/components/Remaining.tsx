@@ -4,7 +4,7 @@ import { ExpenseType } from "../types/ExpenseType";
 
 const Remaining = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
-	const totalExpenses = state.expenses.reduce((total:number, item:ExpenseType) => total + item.cost, 0);
+	const totalExpenses = state.expenses?.reduce((total:number, item:ExpenseType) => total + item.cost, 0);
 
 	const alertType = totalExpenses > state.budget ? "alert-danger" : "alert-success";
 

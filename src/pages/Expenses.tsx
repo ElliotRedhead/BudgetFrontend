@@ -92,7 +92,7 @@ const Expenses = (): JSX.Element => {
 					</button>
 				</div>
 				<div className="vh-100">
-					<ExpensePie />
+					{/* <ExpensePie /> */}
 				</div>
 			</ModalContext.Provider>
 		</ExpenseDataProvider>

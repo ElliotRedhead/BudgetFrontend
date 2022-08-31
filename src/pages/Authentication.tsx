@@ -3,6 +3,7 @@ import { validateEmail } from "../utilities/validateEmail";
 import { validatePassword } from "../utilities/validatePassword";
 import { LOGIN, REGISTER, API_ROOT } from "../constants";
 import useAxios from "../hooks/useAxios";
+// import AuthenticationResponseType from "../types/AuthenticationResponseType";
 
 interface AuthenticationProps {
 	authMode: string
@@ -79,11 +80,11 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 	};
 
 	useEffect(() => {
-		if (response !== null){
-			localStorage.setItem("access_token", response.access);
-			localStorage.setItem("refresh_token", response.refresh);
+		if (response !== null && response !== undefined){
+			localStorage.setItem("access_token", response?.data.access);
+			localStorage.setItem("refresh_token", response?.data.refresh);
 		}
-	}, [response]);
+	});
 
 	return (
 		<div>

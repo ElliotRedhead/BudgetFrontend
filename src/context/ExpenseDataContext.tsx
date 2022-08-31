@@ -1,19 +1,21 @@
-import { createContext, ReactChild, ReactFragment, useReducer } from "react";
+import { createContext, ReactChild, ReactFragment, useEffect, useReducer, useState } from "react";
+import { API_ROOT } from "../constants";
+import useAxios from "../hooks/useAxios";
 import { ExpenseType } from "../types/ExpenseType";
 
 const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:ExpenseType }) => {
 	const payloadValidation = (payload:ExpenseType) => (
 		typeof(payload.id) === "string" &&
 		typeof(payload.name) === "string" &&
-		typeof(payload.name) === "number"
+		typeof(payload.cost) === "number"
 	);
 
 	let existingExpense = false;
 	switch (action.type){
 	case "ADD_EXPENSE":
 		if (payloadValidation(action.payload)){
-			state.expenses.forEach((expense, index) => {
-			// Update existing expense
+			state.expenses?.forEach((expense, index) => {
+				// Update existing expense
 				if (expense.id === action.payload.id) {
 					existingExpense = true;
 					state.expenses[index] = action.payload;
@@ -52,41 +54,40 @@ interface InitialStateType {
 	expenses: ExpenseType[];
 } 
 
-const initialState = {
-	budget: 2000,
-	expenses: [
-		{
-			id: "ecb52fa2-1b85-4eca-93b4-a6f9e97c75b0",
-			name: "Shopping",
-			cost: 50
-		},
-		{
-			id: "9d3916f3-fa18-414a-9b51-e4814255aeb3",
-			name: "Holiday",
-			cost: 300
-		},
-		{
-			id: "d5cbef88-f972-4bbc-94ff-ab59bff1a9aa",
-			name: "Transportation",
-			cost: 70
-		},
-		{
-			id: "c123bc53-97b9-4e9f-a088-b3557fbe8b85",
-			name: "Fuel",
-			cost: 40
-		},
-		{
-			id: "0a5e3c88-7fe9-447f-8b4b-27f10d2a98cc",
-			name: "Utilities",
-			cost: 110
-		}
-	]
-};
-
 export const ExpenseDataContext = createContext({} as ContextType);
 
-
 export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragment }) => {
+	const blankState = {
+		budget: 2000,
+		expenses: [
+		]
+	};
+	const [initialState, setInitialState] = useState(blankState);
+	const { response, loading, error, operation } = useAxios();
+	useEffect(() => {
+		const fetch = () => {
+			operation({
+				method: "get",
+				url: `${API_ROOT}/expenses/`,
+				headers: {
+					"Authorization": `JWT ${localStorage.getItem("access_token")}`
+				}
+			});
+		};
+
+		fetch();
+
+
+	}, []);
+
+	useEffect(() => {
+		if (response !== null && response !== undefined){
+			initialState.expenses = response?.data;
+			setInitialState(response?.data);
+			console.log(initialState);
+		}
+	}, [response, initialState]);
+
 	const [state, dispatch] = useReducer(ExpenseDataReducer, initialState);
 
 	return (
