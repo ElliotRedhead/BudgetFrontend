@@ -65,7 +65,7 @@ export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragmen
 	const [initialState, setInitialState] = useState(blankState);
 	const { response, loading, error, operation } = useAxios();
 	useEffect(() => {
-		const fetch = () => {
+		const fetchExpenses = () => {
 			operation({
 				method: "get",
 				url: `${API_ROOT}/expenses/`,
@@ -74,17 +74,13 @@ export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragmen
 				}
 			});
 		};
-
-		fetch();
-
-
+		fetchExpenses();
 	}, []);
 
 	useEffect(() => {
 		if (response !== null && response !== undefined){
 			initialState.expenses = response?.data;
 			setInitialState(response?.data);
-			console.log(initialState);
 		}
 	}, [response, initialState]);
 
