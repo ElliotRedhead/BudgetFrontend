@@ -1,0 +1,14 @@
+@import "colours.scss";
+
+#submit-button {
+	background-color: $teal;
+	color: $white;
+}
+
+.container-bkg {
+	background-color: $white;
+}
+
+.error {
+	font-size: 0.8rem
+}

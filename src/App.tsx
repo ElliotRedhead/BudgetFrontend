@@ -7,11 +7,14 @@ import {
 import Expenses from "./pages/Expenses";
 import Authentication from "./pages/Authentication";
 import { LOGIN, REGISTER } from "./constants";
+import "./styles/bootstrap.scss";
+import "./styles/bootstrap-icons.scss";
+import "./styles/common.scss";
 
 const App = () => (
 	<Router>
 		<div>
-			<nav>
+			{/* <nav>
 				<ul>
 					<li>
 						<Link to="/expenses">
@@ -29,7 +32,7 @@ const App = () => (
 						</Link>
 					</li>
 				</ul>
-			</nav>
+			</nav> */}
 			<Routes>
 				<Route
 					path="/expenses"
