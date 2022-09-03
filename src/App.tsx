@@ -7,6 +7,8 @@ import {
 import Expenses from "./pages/Expenses";
 import Authentication from "./pages/Authentication";
 import { LOGIN, REGISTER } from "./constants";
+import "./styles/bootstrap.scss";
+import "./styles/common.scss";
 
 const App = () => (
 	<Router>

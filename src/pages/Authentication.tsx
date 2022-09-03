@@ -88,7 +88,7 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 
 	return (
 		<div className="d-flex justify-content-center align-items-center vh-100">
-			<div className="container container-bkg p-5">
+			<div className="container container-bkg p-5 border border-light border-2 rounded">
 				<form onSubmit={formSubmit}>
 					<h3 className="titlecase mb-5">
 						{ authMode }
