@@ -1,6 +1,6 @@
 import { useState, useContext, useMemo } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/index.scss";
+import "../styles/expenses.scss";
 
 import Budget from "../components/Budget";
 import ExpensePie from "../components/ExpensePie";

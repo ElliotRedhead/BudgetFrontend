@@ -3,7 +3,7 @@ import { validateEmail } from "../utilities/validateEmail";
 import { validatePassword } from "../utilities/validatePassword";
 import { LOGIN, REGISTER, API_ROOT } from "../constants";
 import useAxios from "../hooks/useAxios";
-// import AuthenticationResponseType from "../types/AuthenticationResponseType";
+import "../styles/authentication.scss";
 
 interface AuthenticationProps {
 	authMode: string
@@ -87,46 +87,51 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 	});
 
 	return (
-		<div>
-			<form onSubmit={formSubmit}>
-				<h3>
-					{ authMode }
-				</h3>
-				<input
-					value={email}
-					onChange={e => setEmail(e.target.value)}
-					type="text"
-					name="email"
-					placeholder="Email" />
-				<div className="error">
-					{emailError}
-				</div>
-
-				<input
-					value={password}
-					onChange={e => setPassword(e.target.value)}
-					type="password"
-					name="password"
-					placeholder="Password" />
-				<div className="error">
-					{passwordError}
-				</div>
-				{authMode === REGISTER &&
-				<>
+		<div className="d-flex justify-content-center align-items-center vh-100">
+			<div className="container container-bkg p-5">
+				<form onSubmit={formSubmit}>
+					<h3 className="titlecase mb-5">
+						{ authMode }
+					</h3>
 					<input
-						value={confirmPassword}
-						onChange={e => setConfirmPassword(e.target.value)}
-						type="password"
-						name="confirmpassword"
-						placeholder="Confirm Password" />
+						className="br-5 px-3 py-2"
+						value={email}
+						onChange={e => setEmail(e.target.value)}
+						type="text"
+						name="email"
+						placeholder="Email" />
 					<div className="error">
-						{confirmPasswordError}
+						{emailError}
 					</div>
-				</>}
-				<button type="submit">
-					Submit
-				</button>
-			</form>
+
+					<input
+						value={password}
+						onChange={e => setPassword(e.target.value)}
+						type="password"
+						name="password"
+						placeholder="Password" />
+					<div className="error">
+						{passwordError}
+					</div>
+					{authMode === REGISTER &&
+					<>
+						<input
+							value={confirmPassword}
+							onChange={e => setConfirmPassword(e.target.value)}
+							type="password"
+							name="confirmpassword"
+							placeholder="Confirm Password" />
+						<div className="error">
+							{confirmPasswordError}
+						</div>
+					</>}
+					<button
+						id="submit-button"
+						type="submit">
+						Submit
+					</button>
+				</form>
+			</div>
 		</div>
 	);
 };

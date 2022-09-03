@@ -11,7 +11,7 @@ import { LOGIN, REGISTER } from "./constants";
 const App = () => (
 	<Router>
 		<div>
-			<nav>
+			{/* <nav>
 				<ul>
 					<li>
 						<Link to="/expenses">
@@ -29,7 +29,7 @@ const App = () => (
 						</Link>
 					</li>
 				</ul>
-			</nav>
+			</nav> */}
 			<Routes>
 				<Route
 					path="/expenses"

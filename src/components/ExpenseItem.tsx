@@ -33,7 +33,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 	return (
 		<li
 			className="list-group-item d-flex justify-content-between">
-			<div
+			{/* <div
 				className="d-flex justify-content-between align-items-center flex-grow-1"
 				style={{ "maxWidth": "90%" }}
 				onMouseEnter={() => setEditButtonVisibility(true)}
@@ -46,7 +46,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				<span className="badge rounded-pill bg-primary mr-3">
 					{`£${props.cost}`}
 				</span>
-			</div>
+			</div> */}
 			<TiDelete
 				size="1.5em"
 				onClick={handleDeleteExpense} />
