@@ -88,11 +88,9 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 
 	return (
 		<div className="d-flex justify-content-center align-items-center vh-100">
-			<div className="container container-bkg p-5 border border-light border-2 rounded">
+			<div className="container container-bkg p-5 rounded shadow">
 				<form onSubmit={formSubmit}>
-					<h3 className="titlecase mb-5">
-						{ authMode }
-					</h3>
+					<span className="bi bi-person-circle" />
 					<input
 						className="br-5 px-3 py-2"
 						value={email}
@@ -103,7 +101,7 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 					<div className="error">
 						{emailError}
 					</div>
-
+					<span className="bi bi-key" />
 					<input
 						value={password}
 						onChange={e => setPassword(e.target.value)}
@@ -126,9 +124,10 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 						</div>
 					</>}
 					<button
+						className="titlecase"
 						id="submit-button"
 						type="submit">
-						Submit
+						{ authMode }
 					</button>
 				</form>
 			</div>
