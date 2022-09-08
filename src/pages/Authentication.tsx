@@ -17,6 +17,16 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState("");
 	const { response, loading, error, operation } = useAxios();
+	const [headingText, setHeadingText] = useState("");
+	const [submitDisabled, setSubmitDisabled] = useState(true);
+
+	useEffect(() => {
+		if (authMode === REGISTER){
+			setHeadingText("Create a new account");
+		} else {
+			setHeadingText("Log in to your account");
+		}
+	}, [authMode]);
 
 	useEffect(() => {
 		if (!email) {
@@ -41,6 +51,19 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 			}
 		}
 	}, [email, password]);
+
+	useEffect(() => {
+		console.table({
+			"emailError": Boolean(emailError),
+			"passwordError": Boolean(passwordError)
+		});
+		if (emailError || passwordError.length || confirmPasswordError){
+			setSubmitDisabled(true);
+		} else {
+			setSubmitDisabled(false);
+		}
+	}, [emailError, passwordError]
+	);
 
 	useEffect(() => {
 		if (authMode === REGISTER && (!confirmPassword || !password)) {
@@ -87,49 +110,94 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 	});
 
 	return (
-		<div className="d-flex justify-content-center align-items-center vh-100">
-			<div className="container container-bkg p-5 rounded shadow">
-				<form onSubmit={formSubmit}>
-					<span className="bi bi-person-circle" />
-					<input
-						className="br-5 px-3 py-2"
-						value={email}
-						onChange={e => setEmail(e.target.value)}
-						type="text"
-						name="email"
-						placeholder="Email" />
-					<div className="error">
-						{emailError}
+		<div className="d-flex flex-column justify-content-center align-items-center vh-100">
+			<div className="container">
+				<div className="row justify-content-center">
+					<div className="col-11 col-lg-5 container-bkg pb-5 py-5 rounded shadow">
+						<h2 className="pb-3 text-center">
+							{headingText}
+						</h2>
+						<form
+							className="d-flex justify-content-center"
+							onSubmit={formSubmit}>
+							<div className="row justify-content-center">
+								<div className="form-group col-12 col-md-8 mb-2">
+									<label
+										htmlFor="email-input"
+										className="col-12">
+										Email address
+									</label>
+									<div className="input-group my-1">
+										<span className="input-group-text bi bi-person-circle" />
+										<input
+											className="form-control"
+											value={email}
+											onChange={e => setEmail(e.target.value)}
+											type="text"
+											name="email"
+											id="email-input"
+											placeholder="Email" />
+									</div>
+									<div className="error">
+										{emailError}
+									</div>
+								</div>
+								<div className="form-group col-12 col-md-8 mb-2">
+									<label
+										htmlFor="password-input"
+										className="col-12">
+										Password
+									</label>
+									<div className="input-group my-1">
+										<span className="input-group-text bi bi-key" />
+										<input
+											className="form-control"
+											value={password}
+											onChange={e => setPassword(e.target.value)}
+											type="password"
+											name="password"
+											id="password-input"
+											placeholder="Password" />
+									</div>
+									<div className="error">
+										{passwordError}
+									</div>
+								</div>
+								{
+									authMode === REGISTER &&
+									<div className="form-group col-12 col-md-8 mb-2">
+										<label
+											htmlFor="confirm-password-input"
+											className="col-12">
+											Confirm password
+										</label>
+										<div className="input-group my-1">
+											<span className="input-group-text bi bi-key" />
+											<input
+												className="form-control"
+												value={confirmPassword}
+												onChange={e => setConfirmPassword(e.target.value)}
+												type="password"
+												name="confirmpassword"
+												id="confirm-password-input"
+												placeholder="Confirm Password" />
+										</div>
+										<div className="error">
+											{confirmPasswordError}
+										</div>
+									</div>
+								}
+								<button
+									className="btn text-capitalize mt-1 col-6"
+									id="submit-button"
+									type="submit"
+									disabled={submitDisabled}>
+									{ authMode }
+								</button>
+							</div>
+						</form>
 					</div>
-					<span className="bi bi-key" />
-					<input
-						value={password}
-						onChange={e => setPassword(e.target.value)}
-						type="password"
-						name="password"
-						placeholder="Password" />
-					<div className="error">
-						{passwordError}
-					</div>
-					{authMode === REGISTER &&
-					<>
-						<input
-							value={confirmPassword}
-							onChange={e => setConfirmPassword(e.target.value)}
-							type="password"
-							name="confirmpassword"
-							placeholder="Confirm Password" />
-						<div className="error">
-							{confirmPasswordError}
-						</div>
-					</>}
-					<button
-						className="titlecase"
-						id="submit-button"
-						type="submit">
-						{ authMode }
-					</button>
-				</form>
+				</div>
 			</div>
 		</div>
 	);
