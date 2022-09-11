@@ -5,7 +5,7 @@ import { API_ROOT } from "../constants";
 const useAxios = () => {
 	const [response, setResponse] = useState<AxiosResponse>();
 	const [error, setError] = useState<AxiosError|string>();
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const retryCount = useRef(0);
 
 	const operation = async (params:AxiosRequestConfig) => {
