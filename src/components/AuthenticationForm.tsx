@@ -4,6 +4,7 @@ import { API_ROOT, LOGIN, REGISTER } from "../constants";
 import useAxios from "../hooks/useAxios";
 import { validateEmail } from "../utilities/validateEmail";
 import { validatePassword } from "../utilities/validatePassword";
+import { useNavigate } from "react-router-dom";
 
 interface AuthenticationProps {
 	authMode: string
@@ -19,6 +20,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	const [headingText, setHeadingText] = useState<string>();
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const { response, loading, error, operation } = useAxios();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (authMode === REGISTER){
@@ -58,13 +60,15 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	);
 
 	useEffect(() => {
-		if (authMode === REGISTER && (!confirmPassword || !password)) {
-			setConfirmPasswordError("");
-		} else {
-			if (password !== confirmPassword) {
-				setConfirmPasswordError("The passwords must match.");
-			} else {
+		if (authMode === REGISTER){
+			if (!confirmPassword || !password) {
 				setConfirmPasswordError("");
+			} else {
+				if (password !== confirmPassword) {
+					setConfirmPasswordError("The passwords must match.");
+				} else {
+					setConfirmPasswordError("");
+				}
 			}
 		}
 	}, [authMode, password, confirmPassword]);
@@ -213,19 +217,26 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 										</button>
 										{authMode === REGISTER ?
 											<Link
-												className="text-center"
+												className="text-center mb-2"
 												to={`/${LOGIN}`}>
 												Already have an account? Login here
 											</Link> :
 											<Link
-												className="text-center"
+												className="text-center mb-2"
 												to={`/${REGISTER}`}>
 												Need to create an account? Register here
 											</Link>}
+										{
+											error && 
+											<div
+												className="alert alert-danger col-10 text-center"
+												role="alert">
+												{error}
+											</div>
+										}
 									</div>
 								</form>
 							)}
-
 					</div>
 				</div>
 			</div>

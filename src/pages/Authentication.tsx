@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Navigate } from "react-router";
 import AuthenticationForm from "../components/AuthenticationForm";
 import "../styles/authentication.scss";
