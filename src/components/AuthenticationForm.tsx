@@ -14,7 +14,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	const [emailError, setEmailError] = useState<string|null>();
 	const [password, setPassword] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<string[]>([]);
-	const [confirmPassword, setConfirmPassword] = useState<string>();
+	const [confirmPassword, setConfirmPassword] = useState<string>("");
 	const [confirmPasswordError, setConfirmPasswordError] = useState<string|null>();
 	const [headingText, setHeadingText] = useState<string>();
 	const [submitDisabled, setSubmitDisabled] = useState(true);
@@ -95,7 +95,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	};
 
 	useEffect(() => {
-		if (response !== null && response !== undefined){
+		if (response !== (null||undefined)){
 			localStorage.setItem("access_token", response?.data.access);
 			localStorage.setItem("refresh_token", response?.data.refresh);
 		}
