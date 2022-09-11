@@ -98,8 +98,10 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 		if (response !== (null||undefined)){
 			localStorage.setItem("access_token", response?.data.access);
 			localStorage.setItem("refresh_token", response?.data.refresh);
+			navigate("/");
+
 		}
-	}, [response]);
+	}, [response, navigate]);
 
 	return (
 		<div className="d-flex flex-column justify-content-center align-items-center vh-100">
