@@ -38,7 +38,10 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				style={{ "maxWidth": "90%" }}
 				onMouseEnter={() => setEditButtonVisibility(true)}
 				onMouseLeave={() => setEditButtonVisibility(false)}
-				onClick={editOnClickHandler}>
+				onClick={editOnClickHandler}
+				onKeyDown={editOnClickHandler}
+				role="button"
+				tabIndex={0}>
 				<div>
 					{editButtonVisibility && <TiPencil style={{ "marginRight": "1rem" }} /> }
 					{`${props.name}`}
