@@ -10,11 +10,34 @@ import { LOGIN, REGISTER } from "./constants";
 import "./styles/bootstrap.scss";
 import "./styles/bootstrap-icons.scss";
 import "./styles/common.scss";
+import jwtDecode from "jwt-decode";
+
+import { Navigate, Outlet } from "react-router-dom";
+interface DecodedToken {
+	exp: number
+}
+const PrivateRoutes = () => {
+	const accessToken = localStorage.getItem("access_token");
+	if (accessToken){
+		const decodedToken:DecodedToken = jwtDecode(accessToken);
+		const currentDate = new Date();
+		let tokenExpired = true;
+		if (decodedToken.exp * 1000 < currentDate.getTime()) {
+			tokenExpired = true;
+		} else {
+			tokenExpired = false;
+		}
+		return (
+			tokenExpired ? <Navigate to="/login" /> : <Outlet />
+		);
+	}
+	return <Navigate to="login" />;
+};
 
 const App = () => (
 	<Router>
 		<div>
-			{/* <nav>
+			<nav>
 				<ul>
 					<li>
 						<Link to="/expenses">
@@ -32,11 +55,13 @@ const App = () => (
 						</Link>
 					</li>
 				</ul>
-			</nav> */}
+			</nav>
 			<Routes>
-				<Route
-					path="/expenses"
-					element={<Expenses />} />
+				<Route element={<PrivateRoutes />}>
+					<Route
+						path="/expenses"
+						element={<Expenses />} />
+				</Route>
 				<Route
 					path="/login"
 					element={<Authentication authMode={LOGIN} />} />
