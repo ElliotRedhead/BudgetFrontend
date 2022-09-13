@@ -2,34 +2,32 @@ import {
 	BrowserRouter as Router,
 	Routes,
 	Route,
-	Link
+	Link,
+	Navigate,
+	Outlet
 } from "react-router-dom";
 import Expenses from "./pages/Expenses";
 import Authentication from "./pages/Authentication";
 import { LOGIN, REGISTER } from "./constants";
+import jwtDecode from "jwt-decode";
+import { DecodedToken } from "./types/DecodedTokenType";
+
 import "./styles/bootstrap.scss";
 import "./styles/bootstrap-icons.scss";
 import "./styles/common.scss";
-import jwtDecode from "jwt-decode";
 
-import { Navigate, Outlet } from "react-router-dom";
-interface DecodedToken {
-	exp: number
-}
 const PrivateRoutes = () => {
-	const accessToken = localStorage.getItem("access_token");
-	if (accessToken){
-		const decodedToken:DecodedToken = jwtDecode(accessToken);
+	const refreshToken = localStorage.getItem("refresh_token");
+	if (refreshToken){
+		const decodedToken:DecodedToken = jwtDecode(refreshToken);
 		const currentDate = new Date();
-		let tokenExpired = true;
-		if (decodedToken.exp * 1000 < currentDate.getTime()) {
-			tokenExpired = true;
+		if (currentDate.getTime() > decodedToken.exp * 1000) {
+			localStorage.removeItem("refresh_token");
+			localStorage.removeItem("access_token");
+			return <Navigate to="/login" />;
 		} else {
-			tokenExpired = false;
+			return <Outlet />;
 		}
-		return (
-			tokenExpired ? <Navigate to="/login" /> : <Outlet />
-		);
 	}
 	return <Navigate to="login" />;
 };
