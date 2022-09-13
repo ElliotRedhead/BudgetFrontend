@@ -47,7 +47,12 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 					{`${props.name}`}
 				</div>
 				<span className="badge rounded-pill bg-primary mr-3">
-					{`£${props.cost}`}
+					{
+						props.cost < 0 ?
+							`-£${Math.abs(props.cost)}`
+							:
+							`£${props.cost}`
+					}
 				</span>
 			</div>
 			<TiDelete
