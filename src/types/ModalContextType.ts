@@ -8,4 +8,6 @@ export interface ModalContextType {
 	expenseNameSetter: (name:string) => void;
 	expenseCost: number;
 	expenseCostSetter: (cost:number) => void;
+	expenseDate: string;
+	expenseDateSetter: (date:string) => void;
 }

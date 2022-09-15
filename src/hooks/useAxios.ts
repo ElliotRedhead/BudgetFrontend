@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse  } from "axios";
 import { API_ROOT } from "../constants";
 
@@ -13,6 +13,7 @@ const useAxios = () => {
 			const result = await axios.request({ ...params });
 			setResponse(result);
 		} catch (error){
+			console.log(error);
 			setError("A connection error occurred, please try again.");
 			if (error instanceof AxiosError) {
 				if (error.response?.data?.code === "token_not_valid" && localStorage.getItem("refresh_token") !== null){

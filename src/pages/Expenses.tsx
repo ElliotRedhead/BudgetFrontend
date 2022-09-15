@@ -12,9 +12,11 @@ import ModalContext from "../context/ModalContext";
 const Expenses = (): JSX.Element => {
 	const modalContext = useContext(ModalContext);
 	const resetContext = () => {
+
 		setExpenseId("");
 		setExpenseName("");
 		setExpenseCost(0);
+		setExpenseDate((new Date).toISOString().substring(0, 16));
 	};
 
 	const [modalVisibility, setModalVisibility] = useState(false);
@@ -24,6 +26,7 @@ const Expenses = (): JSX.Element => {
 	const [expenseId, setExpenseId] = useState(modalContext.expenseId);
 	const [expenseName, setExpenseName] = useState(modalContext.expenseName);
 	const [expenseCost, setExpenseCost] = useState(modalContext.expenseCost);
+	const [expenseDate, setExpenseDate] = useState(modalContext.expenseDate);
 	const expenseIdSetter = (id: string) => {
 		setExpenseId(id);
 	};
@@ -32,6 +35,9 @@ const Expenses = (): JSX.Element => {
 	};
 	const expenseCostSetter = (cost: number) => {
 		setExpenseCost(cost);
+	};
+	const expenseDateSetter = (date: string) => {
+		setExpenseDate(date);
 	};
 
 	const ModalContextProviderValues = useMemo(() => {
@@ -44,10 +50,12 @@ const Expenses = (): JSX.Element => {
 			expenseName,
 			expenseNameSetter,
 			expenseCost,
-			expenseCostSetter
+			expenseCostSetter,
+			expenseDate,
+			expenseDateSetter
 		};
 		return ModalContextProviderValues;
-	}, [modalVisibility, expenseId, expenseName, expenseCost]);
+	}, [modalVisibility, expenseId, expenseName, expenseCost, expenseDate, expenseDateSetter]);
 
 	return (
 		<ExpenseDataProvider>
@@ -84,6 +92,7 @@ const Expenses = (): JSX.Element => {
 						data-bs-dismiss="modal"
 						aria-label="Open"
 						onClick={() => {
+							modalContext.resetContext();
 							toggleModalVisibility();
 						}}>
 						Add new expense

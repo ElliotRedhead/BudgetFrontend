@@ -1,33 +1,60 @@
 import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
-import { v4 as uuidv4 } from "uuid";
 import { ExpenseType } from "../types/ExpenseType";
+import Form from "react-bootstrap/Form";
+import useAxios from "../hooks/useAxios";
+import { API_ROOT } from "../constants";
 
 const ExpenseFormModal = ():JSX.Element => {
+	const { response, loading, error, operation } = useAxios();
 	const { dispatch } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 	const [name, setName] = useState(modalContext.expenseName);
 	const [cost, setCost] = useState(modalContext.expenseCost);
+	const [date, setDate] = useState(modalContext.expenseDate);
 	const expenseId = modalContext.expenseId;
 
 	useEffect(() => {
 		setName(modalContext.expenseName);
 		setCost(modalContext.expenseCost);
+		setDate(modalContext.expenseDate);
 	}, [modalContext.modalVisibility]);
+
 
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
 		const expense:ExpenseType = {
-			id: expenseId || uuidv4(),
+			id: expenseId,
 			name: name,
-			cost: cost
+			cost: cost,
+			date: date
 		};
 
-		dispatch({
-			type: "ADD_EXPENSE",
-			payload: expense
+		let url = `${API_ROOT}/expenses/`;
+		let method = "post";
+		if (expenseId){
+			url = `${API_ROOT}/expenses/${expense.id}/`;
+			method = "patch";
+		}
+		operation({
+			method: method,
+			url: url,
+			data: {
+				"name": expense.name,
+				"cost": expense.cost,
+				"date": expense.date
+			},
+			headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
 		});
+
+
+		if (response && (response?.status === 201 || response?.status === 204)){
+			dispatch({
+				type: "ADD_EXPENSE",
+				payload: expense
+			});
+		}
 
 		modalContext.toggleModalVisibility();
 	};
@@ -78,6 +105,17 @@ const ExpenseFormModal = ():JSX.Element => {
 										id="cost"
 										value={cost && cost > 0 ? cost.toString() : ""}
 										onChange={event => setCost(parseInt(event.target.value))} />
+								</div>
+								<div className="col-sm">
+									<label htmlFor="date">
+										Date
+									</label>
+									<Form.Control
+										type="datetime-local"
+										onChange={event => {
+											setDate(new Date(event.target.value).toISOString().substring(0, 16));
+										}} 
+										value={date} />
 								</div>
 							</div>
 							<div className="row mt-3">

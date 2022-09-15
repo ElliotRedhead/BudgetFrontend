@@ -7,7 +7,8 @@ interface ExpenseProps {
 	key:string,
 	id:string,
 	name:string,
-	cost:number
+	cost:number,
+	date:string
 }
 
 const ExpenseItem = (props:ExpenseProps): JSX.Element => {
@@ -20,6 +21,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 		modalContext.expenseIdSetter(props.id);
 		modalContext.expenseNameSetter(props.name);
 		modalContext.expenseCostSetter(props.cost);
+		modalContext.expenseDateSetter(props.date);
 		modalContext.toggleModalVisibility();
 	};
 
@@ -42,7 +44,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				onKeyDown={editOnClickHandler}
 				role="button"
 				tabIndex={0}>
-				<div>
+				<div className="text-capitalize">
 					{editButtonVisibility && <TiPencil style={{ "marginRight": "1rem" }} /> }
 					{`${props.name}`}
 				</div>

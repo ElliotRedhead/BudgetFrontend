@@ -11,7 +11,9 @@ const InitialModalContext:ModalContextType = {
 	expenseName: "",
 	expenseNameSetter: (name:string) => {},
 	expenseCost: 0,
-	expenseCostSetter: (cost:number) => {}
+	expenseCostSetter: (cost:number) => {},
+	expenseDate: (new Date).toISOString().substring(0, 16),
+	expenseDateSetter: (date:string) => {}
 };
 
 const ModalContext = createContext(InitialModalContext);
