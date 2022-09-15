@@ -7,7 +7,8 @@ const ExpenseDataReducer = (state:InitialStateType, action: { type:string; paylo
 	const payloadValidation = (payload:ExpenseType) => (
 		typeof(payload.id) === "string" &&
 		typeof(payload.name) === "string" &&
-		typeof(payload.cost) === "number"
+		typeof(payload.cost) === "number" &&
+		typeof(payload.date) === "string"
 	);
 
 	let existingExpense = false;
