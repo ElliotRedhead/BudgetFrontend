@@ -1,7 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import { TiDelete, TiPencil } from "react-icons/ti";
 import ModalContext from "../context/ModalContext";
+import useAxios from "../hooks/useAxios";
+import { API_ROOT } from "../constants";
 
 interface ExpenseProps {
 	key:string,
@@ -25,12 +27,27 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 		modalContext.toggleModalVisibility();
 	};
 
+	const { response, loading, error, operation } = useAxios();
+
 	const handleDeleteExpense = () => {
-		dispatch({
-			type: "DELETE_EXPENSE",
-			payload: { "id": props.id }
+		operation({
+			method: "delete",
+			url: `${API_ROOT}/expenses/${props.id}`,
+			headers: {
+				"Authorization": `JWT ${localStorage.getItem("access_token")}`
+			}
 		});
+	
 	};
+	useEffect(() => {
+		if (response && response.status === 204){
+			dispatch({
+				type: "DELETE_EXPENSE",
+				payload: { "id": props.id }
+			});
+		}
+	});
+
 
 	return (
 		<li

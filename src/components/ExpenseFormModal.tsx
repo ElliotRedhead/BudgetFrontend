@@ -21,6 +21,14 @@ const ExpenseFormModal = ():JSX.Element => {
 		setDate(modalContext.expenseDate);
 	}, [modalContext.modalVisibility]);
 
+	useEffect(() => {
+		if (response && (response?.status === 200 || response?.status === 201)){
+			dispatch({
+				type: "ADD_EXPENSE",
+				payload: response.data
+			});
+		}
+	}, [response]);
 
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
@@ -47,14 +55,6 @@ const ExpenseFormModal = ():JSX.Element => {
 			},
 			headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
 		});
-
-
-		if (response && (response?.status === 201 || response?.status === 204)){
-			dispatch({
-				type: "ADD_EXPENSE",
-				payload: expense
-			});
-		}
 
 		modalContext.toggleModalVisibility();
 	};
