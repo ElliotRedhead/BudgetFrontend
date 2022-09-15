@@ -26,6 +26,7 @@ const useAxios = () => {
 						localStorage.setItem("access_token", refresh?.data.access);
 						localStorage.setItem("refresh_token", refresh?.data.refresh);
 						params.headers = { "Authorization": `JWT ${refresh?.data.access}` };
+						// Retry original request
 						operation(params);
 					} catch (error){
 						if (axios.isAxiosError(error)){

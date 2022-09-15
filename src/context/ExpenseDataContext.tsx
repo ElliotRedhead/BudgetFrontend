@@ -5,7 +5,7 @@ import { ExpenseType } from "../types/ExpenseType";
 
 const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:ExpenseType }) => {
 	const payloadValidation = (payload:ExpenseType) => (
-		typeof(payload.id) === "string" &&
+		typeof(payload.id) === "number" &&
 		typeof(payload.name) === "string" &&
 		typeof(payload.cost) === "number" &&
 		typeof(payload.date) === "string"
