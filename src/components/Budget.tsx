@@ -1,19 +1,25 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 const Budget = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
-	const budgetTotal = state.budget;
+
 	return (
-		<div className="alert alert-secondary">
-			<span>
-				{
-					budgetTotal < 0 ?
-						`Budget: - £${Math.abs(budgetTotal)}`
-						:
-						`Budget: £${budgetTotal}`
-				}
-			</span>
+		<div className="alert alert-secondary text-center">
+			{
+				state.isLoading ?
+					<LoadingSpinner />
+					:
+					<span>
+						{
+							state.budget < 0 ?
+								`Budget: - £${Math.abs(state.budget)}`
+								:
+								`Budget: £${state.budget}`
+						}
+					</span>
+			}
 		</div>
 	);
 };

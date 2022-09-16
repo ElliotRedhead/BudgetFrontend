@@ -5,6 +5,7 @@ import useAxios from "../hooks/useAxios";
 import { validateEmail } from "../utilities/validateEmail";
 import { validatePassword } from "../utilities/validatePassword";
 import { useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface AuthenticationProps {
 	authMode: string
@@ -111,19 +112,12 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 		<div className="d-flex flex-column justify-content-center align-items-center vh-100">
 			<div className="container">
 				<div className="row justify-content-center">
-					<div className="col-11 col-lg-5 container-bkg pb-5 py-5 rounded shadow">
+					<div className="col-11 col-lg-5 container-bkg pb-5 py-5 rounded shadow text-center">
 						<h2 className="pb-3 text-center">
 							{headingText}
 						</h2>
-						{loading ? (
-							<div
-								className="spinner-border text-secondary"
-								role="status">
-								<span className="visually-hidden">
-									Loading...
-								</span>
-							</div>
-						)
+						{loading ?
+							<LoadingSpinner />
 							:
 							(
 								<form

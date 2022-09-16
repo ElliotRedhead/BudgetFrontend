@@ -3,7 +3,7 @@ import { API_ROOT } from "../constants";
 import useAxios from "../hooks/useAxios";
 import { ExpenseType } from "../types/ExpenseType";
 
-const ExpenseDataReducer = (state:InitialStateType, action: { type:string; payload:ExpenseType }) => {
+const ExpenseDataReducer = (state:ExpenseDataContextType, action: { type:string; payload:ExpenseType }) => {
 	const payloadValidation = (payload:ExpenseType) => (
 		typeof(payload.id) === "number" &&
 		typeof(payload.name) === "string" &&
@@ -45,47 +45,63 @@ const ExpenseDataReducer = (state:InitialStateType, action: { type:string; paylo
 	}
 };
 
-interface ContextType {
-	state: InitialStateType;
-	dispatch: React.Dispatch<any>;
-}
 
-interface InitialStateType {
+interface ExpenseDataContextType {
+	isLoading: boolean;
+	isErrored: boolean;
 	budget: number;
 	expenses: ExpenseType[];
 } 
+interface ContextType {
+	state: ExpenseDataContextType;
+	dispatch: React.Dispatch<any>;
+}
 
 export const ExpenseDataContext = createContext({} as ContextType);
 
 export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragment }) => {
 	const blankState = {
+		isLoading: true,
+		isErrored: false,
 		budget: 2000,
 		expenses: [
 		]
 	};
-	const [initialState, setInitialState] = useState(blankState);
+	const [expenseData, setExpenseData] = useState(blankState);
 	const { response, loading, error, operation } = useAxios();
 	useEffect(() => {
-		const fetchExpenses = () => {
-			operation({
-				method: "get",
-				url: `${API_ROOT}/expenses/`,
-				headers: {
-					"Authorization": `JWT ${localStorage.getItem("access_token")}`
-				}
-			});
-		};
-		fetchExpenses();
-	}, []);
+		if (loading === true){
+			expenseData.isLoading = true;
+			setExpenseData(expenseData);
+			console.log(expenseData);
+		} else {
+			if (response?.status !== 200){
+				operation({
+					method: "get",
+					url: `${API_ROOT}/expenses/`,
+					headers: {
+						"Authorization": `JWT ${localStorage.getItem("access_token")}`
+					}
+				});
+			}
+		}
+	}, [loading]);
+
+	useEffect(() => {
+
+	}, [error]);
 
 	useEffect(() => {
 		if (response !== null && response !== undefined){
-			initialState.expenses = response?.data;
-			setInitialState(response?.data);
+			console.log({ response });
+			expenseData.expenses = response?.data;
+			expenseData.isLoading = false;
+			expenseData.isErrored = false;
+			setExpenseData(expenseData);
 		}
-	}, [response, initialState]);
+	}, [response, expenseData]);
 
-	const [state, dispatch] = useReducer(ExpenseDataReducer, initialState);
+	const [state, dispatch] = useReducer(ExpenseDataReducer, expenseData);
 
 	return (
 		<ExpenseDataContext.Provider value={{ state, dispatch }}>

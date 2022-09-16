@@ -2,6 +2,7 @@
 import { useContext } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import { ExpenseType } from "../types/ExpenseType";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 const ExpenseTotal = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
@@ -9,15 +10,20 @@ const ExpenseTotal = (): JSX.Element => {
 
 
 	return (
-		<div className="alert alert-primary">
-			<span>
-				{
-					expensesTotal < 0 ?
-						`Spent so far: - £${Math.abs(expensesTotal)}`
-						:
-						`Spent so far: £${expensesTotal}`
-				}
-			</span>
+		<div className="alert alert-primary text-center">
+			{
+				state.isLoading ?
+					<LoadingSpinner />
+					:
+					<span>
+						{
+							expensesTotal < 0 ?
+								`Spent so far: - £${Math.abs(expensesTotal)}`
+								:
+								`Spent so far: £${expensesTotal}`
+						}
+					</span>
+			}
 		</div>
 	);
 };
