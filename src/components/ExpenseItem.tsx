@@ -58,7 +58,11 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				onMouseEnter={() => setEditButtonVisibility(true)}
 				onMouseLeave={() => setEditButtonVisibility(false)}
 				onClick={editOnClickHandler}
-				onKeyDown={editOnClickHandler}
+				onKeyDown={event => {
+					if (event.key === "Enter"){
+						editOnClickHandler();
+					}
+				}}
 				role="button"
 				tabIndex={0}>
 				<div className="text-capitalize">
@@ -76,7 +80,9 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 			</div>
 			<TiDelete
 				size="1.5em"
-				onClick={handleDeleteExpense} />
+				onClick={handleDeleteExpense}
+				tabIndex={0}
+				role="button" />
 		</li>
 	);
 };
