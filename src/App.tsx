@@ -26,7 +26,7 @@ const PrivateRoutes = () => {
 		if (currentDate.getTime() > decodedToken.exp * 1000) {
 			localStorage.removeItem("refresh_token");
 			localStorage.removeItem("access_token");
-			return <Navigate to="/login" />;
+			return <Navigate to="login" />;
 		} else {
 			return <Outlet />;
 		}
