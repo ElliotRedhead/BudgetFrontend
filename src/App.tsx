@@ -1,11 +1,13 @@
+import { Container, Nav, Navbar, NavItem } from "react-bootstrap"; 
 import {
 	BrowserRouter as Router,
-	Routes,
-	Route,
 	Link,
 	Navigate,
-	Outlet
+	Outlet,
+	Route,
+	Routes
 } from "react-router-dom";
+
 import Expenses from "./pages/Expenses";
 import Authentication from "./pages/Authentication";
 import { LOGIN, REGISTER } from "./constants";
@@ -32,43 +34,67 @@ const PrivateRoutes = () => {
 	return <Navigate to="login" />;
 };
 
-const App = () => (
-	<Router>
-		<div>
-			<nav>
-				<ul>
-					<li>
-						<Link to="/expenses">
-							Expenses
-						</Link>
-					</li>
-					<li>
-						<Link to="/login">
-							Login
-						</Link>
-					</li>
-					<li>
-						<Link to="/register">
-							Register
-						</Link>
-					</li>
-				</ul>
-			</nav>
-			<Routes>
-				<Route element={<PrivateRoutes />}>
+const App = () => {
+	const refreshToken = localStorage.getItem("refresh_token");
+
+	return (
+		<Router>
+			<>
+				<Navbar
+					bg="light"
+					variant="light"
+					expand="lg">
+					<Container>
+						<Navbar.Toggle aria-controls="navigation-bar" />
+						<Navbar.Collapse id="navigation-bar">
+							<Nav className="me-auto">
+								{refreshToken ? 
+									<>
+										<NavItem>
+											<Link
+												className="nav-link"
+												to="/expenses">
+												Expenses
+											</Link>
+										</NavItem>
+									</>
+									:
+									<>
+										<NavItem>
+											<Link 
+												className="nav-link"
+												to="/register">
+												Register
+											</Link>
+										</NavItem>
+										<NavItem>
+											<Link
+												className="nav-link"
+												to="/login">
+												Login
+											</Link>
+										</NavItem>
+									</>}
+							</Nav>
+						</Navbar.Collapse>
+					</Container>
+				</Navbar>
+				<Routes>
+					<Route element={<PrivateRoutes />}>
+						<Route
+							path="/expenses"
+							element={<Expenses />} />
+					</Route>
 					<Route
-						path="/expenses"
-						element={<Expenses />} />
-				</Route>
-				<Route
-					path="/login"
-					element={<Authentication authMode={LOGIN} />} />
-				<Route
-					path="/register"
-					element={<Authentication authMode={REGISTER} />} />
-			</Routes>
-		</div>
-	</Router>
-);
+						path="/login"
+						element={<Authentication authMode={LOGIN} />} />
+					<Route
+						path="/register"
+						element={<Authentication authMode={REGISTER} />} />
+				</Routes>
+			</>
+		</Router>
+	);
+};
 
 export default App;
