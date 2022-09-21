@@ -12,7 +12,7 @@ const Authentication = ({ authMode }:AuthenticationProps) => {
 
 	if (accessToken && refreshToken){
 		return (
-			<Navigate to="/" />
+			<Navigate to="/expenses" />
 		);
 	}
 	return (

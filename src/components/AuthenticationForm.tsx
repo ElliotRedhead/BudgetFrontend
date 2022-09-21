@@ -103,7 +103,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 		if (response !== (null||undefined)){
 			localStorage.setItem("access_token", response?.data.access);
 			localStorage.setItem("refresh_token", response?.data.refresh);
-			navigate("/");
+			navigate("/expenses");
 
 		}
 	}, [response, navigate]);

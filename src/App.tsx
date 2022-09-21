@@ -1,11 +1,11 @@
 import { Container, Nav, Navbar, NavItem } from "react-bootstrap"; 
 import {
-	BrowserRouter as Router,
-	Link,
+	NavLink,
 	Navigate,
 	Outlet,
 	Route,
-	Routes
+	Routes,
+	useLocation
 } from "react-router-dom";
 
 import Expenses from "./pages/Expenses";
@@ -36,64 +36,64 @@ const PrivateRoutes = () => {
 
 const App = () => {
 	const refreshToken = localStorage.getItem("refresh_token");
-
+	const location = useLocation();
 	return (
-		<Router>
-			<>
-				<Navbar
-					bg="light"
-					variant="light"
-					expand="lg">
-					<Container>
-						<Navbar.Toggle aria-controls="navigation-bar" />
-						<Navbar.Collapse id="navigation-bar">
-							<Nav className="me-auto">
-								{refreshToken ? 
-									<>
-										<NavItem>
-											<Link
-												className="nav-link"
-												to="/expenses">
-												Expenses
-											</Link>
-										</NavItem>
-									</>
-									:
-									<>
-										<NavItem>
-											<Link 
-												className="nav-link"
-												to="/register">
-												Register
-											</Link>
-										</NavItem>
-										<NavItem>
-											<Link
-												className="nav-link"
-												to="/login">
-												Login
-											</Link>
-										</NavItem>
-									</>}
-							</Nav>
-						</Navbar.Collapse>
-					</Container>
-				</Navbar>
-				<Routes>
-					<Route element={<PrivateRoutes />}>
-						<Route
-							path="/expenses"
-							element={<Expenses />} />
-					</Route>
+		<>
+			<Navbar
+				bg="light"
+				variant="light"
+				expand="lg">
+				<Container>
+					<Navbar.Toggle aria-controls="navigation-bar" />
+					<Navbar.Collapse id="navigation-bar">
+						<Nav
+							activeKey={location.pathname}
+							className="me-auto">
+							{refreshToken ? 
+								<>
+									<NavItem>
+										<NavLink
+											className="nav-link"
+											to="/expenses">
+											Expenses
+										</NavLink>
+									</NavItem>
+								</>
+								:
+								<>
+									<NavItem>
+										<NavLink 
+											className="nav-link"
+											to="/register">
+											Register
+										</NavLink>
+									</NavItem>
+									<NavItem>
+										<NavLink
+											className="nav-link"
+											to="/login">
+											Login
+										</NavLink>
+									</NavItem>
+								</>}
+						</Nav>
+					</Navbar.Collapse>
+				</Container>
+			</Navbar>
+			<Routes>
+				<Route element={<PrivateRoutes />}>
 					<Route
-						path="/login"
-						element={<Authentication authMode={LOGIN} />} />
-					<Route
-						path="/register"
-						element={<Authentication authMode={REGISTER} />} />
-				</Routes>
-			</>
-		</Router>
+						path="/expenses"
+						element={<Expenses />} />
+				</Route>
+				<Route
+					path="/login"
+					element={<Authentication authMode={LOGIN} />} />
+				<Route
+					path="/register"
+					element={<Authentication authMode={REGISTER} />} />
+			</Routes>
+		</>
 	);
 };
 
