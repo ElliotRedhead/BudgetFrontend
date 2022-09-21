@@ -17,6 +17,7 @@ import { DecodedToken } from "./types/DecodedTokenType";
 import "./styles/bootstrap.scss";
 import "./styles/bootstrap-icons.scss";
 import "./styles/common.scss";
+import { Logout } from "./components/Logout";
 
 const PrivateRoutes = () => {
 	const refreshToken = localStorage.getItem("refresh_token");
@@ -26,12 +27,12 @@ const PrivateRoutes = () => {
 		if (currentDate.getTime() > decodedToken.exp * 1000) {
 			localStorage.removeItem("refresh_token");
 			localStorage.removeItem("access_token");
-			return <Navigate to="login" />;
+			return <Navigate to="/login" />;
 		} else {
 			return <Outlet />;
 		}
 	}
-	return <Navigate to="login" />;
+	return <Navigate to="/login" />;
 };
 
 const App = () => {
@@ -56,6 +57,21 @@ const App = () => {
 											className="nav-link"
 											to="/expenses">
 											Expenses
+										</NavLink>
+									</NavItem>
+									<NavItem>
+										<NavLink
+											to="/login"
+											className="nav-link"
+											onClick={Logout}
+											onKeyDown={event => {
+												if (event.key === "Enter"){
+													Logout();
+												}
+											}}
+											role="button"
+											tabIndex={0}>
+											Logout
 										</NavLink>
 									</NavItem>
 								</>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_ROOT, LOGIN, REGISTER } from "../constants";
 import useAxios from "../hooks/useAxios";
@@ -74,7 +74,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 		}
 	}, [authMode, password, confirmPassword]);
 
-	const formSubmit = async (event:any) => {
+	const formSubmit = async (event:FormEvent) => {
 		event.preventDefault();
 		if (authMode === REGISTER){
 			operation({
@@ -109,7 +109,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	}, [response, navigate]);
 
 	return (
-		<div className="d-flex flex-column justify-content-center align-items-center vh-100">
+		<div className="d-flex flex-column justify-content-center align-items-center col">
 			<div className="container">
 				<div className="row justify-content-center">
 					<div className="col-11 col-lg-5 container-bkg pb-5 py-5 rounded shadow text-center">
