@@ -18,21 +18,24 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 	const { dispatch } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 
+	const { id, name, cost, date } = props;
+	const parsedDate = (new Date(date)).toLocaleDateString();
+
 	const editOnClickHandler = () => {
 		setEditButtonVisibility(false);
-		modalContext.expenseIdSetter(props.id);
-		modalContext.expenseNameSetter(props.name);
-		modalContext.expenseCostSetter(props.cost);
-		modalContext.expenseDateSetter(props.date);
+		modalContext.expenseIdSetter(id);
+		modalContext.expenseNameSetter(name);
+		modalContext.expenseCostSetter(cost);
+		modalContext.expenseDateSetter(date);
 		modalContext.toggleModalVisibility();
 	};
-
+	
 	const { response, loading, error, operation } = useAxios();
 
 	const handleDeleteExpense = () => {
 		operation({
 			method: "delete",
-			url: `${API_ROOT}/expenses/${props.id}`,
+			url: `${API_ROOT}/expenses/${id}`,
 			headers: {
 				"Authorization": `JWT ${localStorage.getItem("access_token")}`
 			}
@@ -43,7 +46,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 		if (response && response.status === 204){
 			dispatch({
 				type: "DELETE_EXPENSE",
-				payload: { "id": props.id }
+				payload: { "id": id }
 			});
 		}
 	});
@@ -67,14 +70,18 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				tabIndex={0}>
 				<div className="text-capitalize">
 					{editButtonVisibility && <TiPencil style={{ "marginRight": "1rem" }} /> }
-					{`${props.name}`}
+					{`${name}`}
+				</div>
+				<div>
+					{`${parsedDate}`}
+
 				</div>
 				<span className="badge rounded-pill bg-primary mr-3">
 					{
-						props.cost < 0 ?
-							`-£${Math.abs(props.cost)}`
+						cost < 0 ?
+							`-£${Math.abs(cost)}`
 							:
-							`£${props.cost}`
+							`£${cost}`
 					}
 				</span>
 			</div>
