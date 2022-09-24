@@ -225,7 +225,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 											<div
 												className="alert alert-danger col-10 text-center"
 												role="alert">
-												{error}
+												{error.toString()}
 											</div>
 										}
 									</div>
