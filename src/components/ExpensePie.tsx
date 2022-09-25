@@ -27,8 +27,7 @@ const ExpensePie = () => {
 	};
 	return (
 		<div
-			className="h-100 d-flex flex-column justify-content-center align-content-center"
-			style={{ "height": "100vh" }}>
+			className="h-100vh d-flex flex-column justify-content-center align-content-center">
 			<Pie 
 				id="expensesPie"
 				data={pieData} />

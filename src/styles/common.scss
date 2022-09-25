@@ -11,3 +11,9 @@ body {
 	flex-direction: column;
 	min-height: 100vh;
 }
+
+@for $i from 1 through 20 {
+	.z-#{$i*5} {
+		z-index: $i*5;
+	}
+}

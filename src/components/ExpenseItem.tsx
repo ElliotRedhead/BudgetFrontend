@@ -56,8 +56,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 		<li
 			className="list-group-item d-flex justify-content-between">
 			<div
-				className="d-flex justify-content-between align-items-center flex-grow-1"
-				style={{ "maxWidth": "90%" }}
+				className="d-flex justify-content-between align-items-center flex-grow-1 mw-90"
 				onMouseEnter={() => setEditButtonVisibility(true)}
 				onMouseLeave={() => setEditButtonVisibility(false)}
 				onClick={editOnClickHandler}
@@ -69,7 +68,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				role="button"
 				tabIndex={0}>
 				<div className="text-capitalize">
-					{editButtonVisibility && <TiPencil style={{ "marginRight": "1rem" }} /> }
+					{editButtonVisibility && <TiPencil className="me-3" /> }
 					{`${name}`}
 				</div>
 				<div>

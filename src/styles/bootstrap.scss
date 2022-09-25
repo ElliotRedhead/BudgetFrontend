@@ -1,4 +1,78 @@
 $font-size-root: 18px;
 
 // Import Bootstrap and its default variables
-@import '~bootstrap/scss/bootstrap.scss';
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import 'bootstrap/scss/bootstrap';
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/utilities";
+
+// Adding increments of 5 for common layout classes
+@for $i from 1 through 20 {
+	$utilities: map-merge(
+		$utilities,
+		(
+			"max-width": map-merge(
+				map-get($utilities, "max-width"),
+				(
+					values: map-merge(
+						map-get(map-get($utilities, "max-width"), "values"),
+						(
+							$i*5: $i*5%,
+							$i*5vw: $i*5vw,
+							),
+					),
+				),
+			),
+			"max-height": map-merge(
+				map-get($utilities, "max-height"),
+				(
+					values: map-merge(
+						map-get(map-get($utilities, "max-height"), "values"),
+						(
+							$i*5: $i*5%,
+							$i*5vh: $i*5vh,
+							),
+					),
+				),
+			),
+			"width": map-merge(
+				map-get($utilities, "width"),
+				(
+					values: map-merge(
+						map-get(map-get($utilities, "width"), "values"),
+						(
+							$i*5: $i*5%,
+							$i*5vw: $i*5vw,
+							),
+					),
+				),
+			),
+			"height": map-merge(
+				map-get($utilities, "height"),
+				(
+					values: map-merge(
+						map-get(map-get($utilities, "height"), "values"),
+						(
+							$i*5: $i*5%,
+							$i*5vh: $i*5vh,
+							),
+					),
+				),
+			),
+		)
+	);
+}
+
+// Re-import required to apply custom variable changes with Bootstrap
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import 'bootstrap/scss/bootstrap';
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/utilities";
