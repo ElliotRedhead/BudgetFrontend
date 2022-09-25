@@ -20,7 +20,7 @@ const ExpenseList = (): JSX.Element => {
 											key={expense.id}
 											id={expense.id}
 											name={expense.name}
-											cost={expense.cost}
+											cost={Number(expense.cost)}
 											date={expense.date.substring(0, 16)} />
 									);
 								} else {

@@ -73,7 +73,6 @@ export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragmen
 		if (loading === true){
 			expenseData.isLoading = true;
 			setExpenseData(expenseData);
-			console.log(expenseData);
 		} else {
 			if (response?.status !== 200){
 				operation({
@@ -93,7 +92,6 @@ export const ExpenseDataProvider = (props: { children: ReactChild | ReactFragmen
 
 	useEffect(() => {
 		if (response !== null && response !== undefined){
-			console.log({ response });
 			expenseData.expenses = response?.data;
 			expenseData.isLoading = false;
 			expenseData.isErrored = false;

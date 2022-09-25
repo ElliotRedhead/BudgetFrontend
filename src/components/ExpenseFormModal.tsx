@@ -5,6 +5,7 @@ import { ExpenseType } from "../types/ExpenseType";
 import Form from "react-bootstrap/Form";
 import useAxios from "../hooks/useAxios";
 import { API_ROOT } from "../constants";
+import { validateCost } from "../utilities/validateCost";
 
 const ExpenseFormModal = ():JSX.Element => {
 	const { response, loading, error, operation } = useAxios();
@@ -12,13 +13,16 @@ const ExpenseFormModal = ():JSX.Element => {
 	const modalContext = useContext(ModalContext);
 	const [name, setName] = useState(modalContext.expenseName);
 	const [cost, setCost] = useState(modalContext.expenseCost);
+	const [unvalidatedCost, setUnvalidatedCost] = useState<string>("0.00");
 	const [date, setDate] = useState(modalContext.expenseDate);
 	const expenseId = modalContext.expenseId;
+	const [formEnabled, setFormEnabled] = useState(true);
 
 	useEffect(() => {
 		setName(modalContext.expenseName);
 		setCost(modalContext.expenseCost);
 		setDate(modalContext.expenseDate);
+		setUnvalidatedCost(String((modalContext.expenseCost/100).toFixed(2)));
 	}, [modalContext.modalVisibility]);
 
 	useEffect(() => {
@@ -30,33 +34,48 @@ const ExpenseFormModal = ():JSX.Element => {
 		}
 	}, [response]);
 
+	useEffect(() => {
+		setCost(Number(unvalidatedCost)*100);
+		if (unvalidatedCost !== undefined){
+			if (validateCost(unvalidatedCost)){
+				setCost(Number(unvalidatedCost)*100);
+				setFormEnabled(true);
+			} else {
+				setFormEnabled(false);
+			}
+		}
+	}, [unvalidatedCost]);
+
+
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
-		const expense:ExpenseType = {
-			id: expenseId,
-			name: name,
-			cost: cost,
-			date: date
-		};
+		if (formEnabled){
+			const expense:ExpenseType = {
+				id: expenseId,
+				name: name,
+				cost: unvalidatedCost|| cost,
+				date: date
+			};
 
-		let url = `${API_ROOT}/expenses/`;
-		let method = "post";
-		if (expenseId){
-			url = `${API_ROOT}/expenses/${expense.id}/`;
-			method = "patch";
+			let url = `${API_ROOT}/expenses/`;
+			let method = "post";
+			if (expenseId){
+				url = `${API_ROOT}/expenses/${expense.id}/`;
+				method = "patch";
+			}
+			operation({
+				method: method,
+				url: url,
+				data: {
+					"name": expense.name,
+					"cost": Number(expense.cost)*100,
+					"date": expense.date
+				},
+				headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
+			});
+
+			modalContext.toggleModalVisibility();
 		}
-		operation({
-			method: method,
-			url: url,
-			data: {
-				"name": expense.name,
-				"cost": expense.cost,
-				"date": expense.date
-			},
-			headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
-		});
-
-		modalContext.toggleModalVisibility();
 	};
 
 	return (
@@ -96,15 +115,17 @@ const ExpenseFormModal = ():JSX.Element => {
 								</div>
 								<div className="col-sm">
 									<label htmlFor="Cost">
-										Cost
+										Cost (£)
 									</label>
 									<input
 										required={true}
 										type="text"
 										className="form-control"
 										id="cost"
-										value={cost && cost > 0 ? cost.toString() : ""}
-										onChange={event => setCost(parseInt(event.target.value))} />
+										value={unvalidatedCost}
+										onChange={event => {
+											setUnvalidatedCost(event.target.value);
+										}} />
 								</div>
 								<div className="col-sm">
 									<label htmlFor="date">
@@ -134,6 +155,7 @@ const ExpenseFormModal = ():JSX.Element => {
 								</button>
 								<input
 									type="submit"
+									disabled={!formEnabled}
 									className="btn btn-primary"
 									value="Save expense" />
 							</div>

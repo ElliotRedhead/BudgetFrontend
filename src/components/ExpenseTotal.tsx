@@ -6,7 +6,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 const ExpenseTotal = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
-	const expensesTotal = state.expenses?.reduce((total:number, item:ExpenseType) => total + item.cost, 0);
+	const expensesTotal = (state.expenses?.reduce((total:number, item:ExpenseType) => total + Number(item.cost), 0))/100;
 
 
 	return (

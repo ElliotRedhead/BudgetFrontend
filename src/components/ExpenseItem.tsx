@@ -78,9 +78,9 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 				<span className="badge rounded-pill bg-primary mr-3">
 					{
 						cost < 0 ?
-							`-£${Math.abs(cost)}`
+							`-£${(Math.abs(cost)/100).toFixed(2)}`
 							:
-							`£${cost}`
+							`£${(cost/100).toFixed(2)}`
 					}
 				</span>
 			</div>

@@ -5,7 +5,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 const Remaining = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
-	const expensesTotal = state.expenses?.reduce((total:number, item:ExpenseType) => total + item.cost, 0);
+	const expensesTotal = (state.expenses?.reduce((total:number, item:ExpenseType) => total + Number(item.cost), 0))/100;
 
 	const alertType = expensesTotal > state.budget ? "alert-danger" : "alert-success";
 	const remainingBudget = state.budget - expensesTotal;
