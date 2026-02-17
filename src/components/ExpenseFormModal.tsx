@@ -68,7 +68,7 @@ const ExpenseFormModal = ():JSX.Element => {
 				url: url,
 				data: {
 					"name": expense.name,
-					"cost": Number(expense.cost)*100,
+					"cost": Math.round(Number(expense.cost)*100),
 					"date": expense.date
 				},
 				headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
