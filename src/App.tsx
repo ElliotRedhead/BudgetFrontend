@@ -15,7 +15,7 @@ import jwtDecode from "jwt-decode";
 import { DecodedToken } from "./types/DecodedTokenType";
 
 import "./styles/bootstrap.scss";
-import "./styles/bootstrap-icons.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles/common.scss";
 import { Logout } from "./components/Logout";
 

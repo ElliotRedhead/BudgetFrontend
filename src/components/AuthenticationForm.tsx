@@ -100,7 +100,7 @@ const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	};
 
 	useEffect(() => {
-		if (response !== (null||undefined)){
+		if (response){
 			localStorage.setItem("access_token", response?.data.access);
 			localStorage.setItem("refresh_token", response?.data.refresh);
 			navigate("/expenses");
