@@ -4,6 +4,7 @@ import { TiDelete, TiPencil } from "react-icons/ti";
 import ModalContext from "../context/ModalContext";
 import useAxios from "../hooks/useAxios";
 import { API_ROOT } from "../constants";
+import { toDateTimeInputValue } from "../utilities/dateTimeInput";
 
 interface ExpenseProps {
 	key:string,
@@ -26,7 +27,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 		modalContext.expenseIdSetter(id);
 		modalContext.expenseNameSetter(name);
 		modalContext.expenseCostSetter(cost);
-		modalContext.expenseDateSetter(date);
+		modalContext.expenseDateSetter(toDateTimeInputValue(date));
 		modalContext.toggleModalVisibility();
 	};
 	

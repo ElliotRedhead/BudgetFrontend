@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { createContext } from "react";
 import { ModalContextType } from "../types/ModalContextType";
+import { toDateTimeInputValue } from "../utilities/dateTimeInput";
 
 const InitialModalContext:ModalContextType = {
 	resetContext: () => {},
@@ -12,7 +13,7 @@ const InitialModalContext:ModalContextType = {
 	expenseNameSetter: (name:string) => {},
 	expenseCost: 0,
 	expenseCostSetter: (cost:number) => {},
-	expenseDate: (new Date).toISOString().substring(0, 16),
+	expenseDate: toDateTimeInputValue(new Date().toISOString()),
 	expenseDateSetter: (date:string) => {}
 };
 

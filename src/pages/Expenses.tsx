@@ -8,6 +8,7 @@ import ExpenseList from "../components/ExpenseList";
 import ExpenseFormModal from "../components/ExpenseFormModal";
 import { ExpenseDataProvider } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
+import { toDateTimeInputValue } from "../utilities/dateTimeInput";
 
 const Expenses = (): JSX.Element => {
 	const modalContext = useContext(ModalContext);
@@ -16,7 +17,7 @@ const Expenses = (): JSX.Element => {
 		setExpenseId("");
 		setExpenseName("");
 		setExpenseCost(0);
-		setExpenseDate((new Date).toISOString().substring(0, 16));
+		setExpenseDate(toDateTimeInputValue(new Date().toISOString()));
 	};
 
 	const [modalVisibility, setModalVisibility] = useState(false);

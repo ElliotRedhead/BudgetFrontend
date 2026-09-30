@@ -6,6 +6,7 @@ import Form from "react-bootstrap/Form";
 import useAxios from "../hooks/useAxios";
 import { API_ROOT } from "../constants";
 import { validateCost } from "../utilities/validateCost";
+import { fromDateTimeInputValue } from "../utilities/dateTimeInput";
 
 const ExpenseFormModal = ():JSX.Element => {
 	const { response, loading, error, operation } = useAxios();
@@ -69,7 +70,7 @@ const ExpenseFormModal = ():JSX.Element => {
 				data: {
 					"name": expense.name,
 					"cost": Math.round(Number(expense.cost)*100),
-					"date": expense.date
+					"date": fromDateTimeInputValue(expense.date)
 				},
 				headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
 			});
@@ -134,7 +135,7 @@ const ExpenseFormModal = ():JSX.Element => {
 									<Form.Control
 										type="datetime-local"
 										onChange={event => {
-											setDate(new Date(event.target.value).toISOString().substring(0, 16));
+											setDate(event.target.value);
 										}} 
 										value={date} />
 								</div>
