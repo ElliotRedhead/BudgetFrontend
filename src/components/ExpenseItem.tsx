@@ -35,7 +35,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 	const handleDeleteExpense = () => {
 		operation({
 			method: "delete",
-			url: `${API_ROOT}/expenses/${id}`,
+			url: `${API_ROOT}/expenses/${id}/`,
 			headers: {
 				"Authorization": `JWT ${localStorage.getItem("access_token")}`
 			}
@@ -87,6 +87,12 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 			<TiDelete
 				size="1.5em"
 				onClick={handleDeleteExpense}
+				onKeyDown={event => {
+					if (event.key === "Enter"){
+						handleDeleteExpense();
+					}
+				}}
+				aria-label={`Delete ${name}`}
 				tabIndex={0}
 				role="button" />
 		</li>
