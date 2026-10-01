@@ -67,16 +67,20 @@ const useAxios = () => {
 	const [error, setError] = useState<string>();
 	const [loading, setLoading] = useState(false);
 
-	const operation = useCallback(async (params: AxiosRequestConfig) => {
+	const operation = useCallback(async (params: AxiosRequestConfig): Promise<AxiosResponse | undefined> => {
 		setLoading(true);
 		setError(undefined);
 		try {
-			setResponse(await axios.request({ ...params }));
+			const result = await axios.request({ ...params });
+			setResponse(result);
+			return result;
 		} catch (requestError){
 			console.log(requestError);
 			if (isExpiredTokenError(requestError)){
 				try {
-					setResponse(await refreshAndRetry(params));
+					const result = await refreshAndRetry(params);
+					setResponse(result);
+					return result;
 				} catch (retryError){
 					console.log(retryError);
 					setError(SESSION_EXPIRED_ERROR);
@@ -87,6 +91,7 @@ const useAxios = () => {
 		} finally {
 			setLoading(false);
 		}
+		return undefined;
 	}, []);
 
 	return { response, error, loading, operation };
