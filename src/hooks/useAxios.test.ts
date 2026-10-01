@@ -1,21 +1,47 @@
 import { act, renderHook } from "@testing-library/react";
 import axios, { AxiosError, AxiosHeaders, AxiosResponse } from "axios";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import useAxios from "./useAxios";
+import useAxios, { describeRequestError } from "./useAxios";
 
-const expiredTokenError = () => new AxiosError(
-	"Request failed with status code 401",
+const apiError = (status: number, data: unknown) => new AxiosError(
+	`Request failed with status code ${status}`,
 	"ERR_BAD_REQUEST",
 	undefined,
 	undefined,
 	{
-		status: 401,
-		statusText: "Unauthorized",
+		status,
+		statusText: "",
 		headers: {},
 		config: { headers: new AxiosHeaders() },
-		data: { code: "token_not_valid" }
+		data
 	} as AxiosResponse
 );
+
+const expiredTokenError = () => apiError(401, { code: "token_not_valid" });
+
+describe("describeRequestError", () => {
+	it("uses the API's detail message", () => {
+		const loginError = apiError(401, { detail: "No active account found with the given credentials" });
+
+		expect(describeRequestError(loginError)).toBe("No active account found with the given credentials");
+	});
+
+	it("joins field validation messages", () => {
+		const registerError = apiError(400, {
+			email: ["user with this email address already exists."],
+			password: ["This password is too common."]
+		});
+
+		expect(describeRequestError(registerError)).toBe(
+			"user with this email address already exists. This password is too common."
+		);
+	});
+
+	it("falls back to a connection message for server and network errors", () => {
+		expect(describeRequestError(apiError(500, "<html>"))).toBe("A connection error occurred, please try again.");
+		expect(describeRequestError(new Error("Network Error"))).toBe("A connection error occurred, please try again.");
+	});
+});
 
 describe("useAxios", () => {
 	afterEach(() => {

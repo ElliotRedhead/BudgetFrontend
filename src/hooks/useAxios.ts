@@ -5,6 +5,30 @@ import { API_ROOT } from "../constants";
 const CONNECTION_ERROR = "A connection error occurred, please try again.";
 const SESSION_EXPIRED_ERROR = "Your session has expired, please log in again.";
 
+/**
+ * Turn a failed request into a message for the user, preferring the API's own
+ * explanation (e.g. "No active account found..." or a field's validation errors).
+ *
+ * @param requestError Whatever the request threw
+ * @returns A readable message
+ */
+export const describeRequestError = (requestError: unknown) => {
+	if (!axios.isAxiosError(requestError) || !requestError.response || requestError.response.status >= 500){
+		return CONNECTION_ERROR;
+	}
+	const data = requestError.response.data;
+	if (typeof data?.detail === "string"){
+		return data.detail;
+	}
+	if (data && typeof data === "object"){
+		const messages = Object.values(data).flat().filter(message => typeof message === "string");
+		if (messages.length){
+			return messages.join(" ");
+		}
+	}
+	return CONNECTION_ERROR;
+};
+
 const isExpiredTokenError = (requestError: unknown) => axios.isAxiosError(requestError) &&
 	requestError.response?.data?.code === "token_not_valid" &&
 	localStorage.getItem("refresh_token") !== null;
@@ -43,7 +67,7 @@ const useAxios = () => {
 					setError(SESSION_EXPIRED_ERROR);
 				}
 			} else {
-				setError(CONNECTION_ERROR);
+				setError(describeRequestError(requestError));
 			}
 		} finally {
 			setLoading(false);
