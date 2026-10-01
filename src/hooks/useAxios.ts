@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { API_ROOT } from "../constants";
 
@@ -33,26 +33,41 @@ const isExpiredTokenError = (requestError: unknown) => axios.isAxiosError(reques
 	requestError.response?.data?.code === "token_not_valid" &&
 	localStorage.getItem("refresh_token") !== null;
 
+// Refresh tokens are single use, so requests that expire together must share
+// one refresh rather than each spending the same token.
+let refreshInFlight: Promise<string> | null = null;
+
+const refreshAccessToken = () => {
+	if (!refreshInFlight){
+		refreshInFlight = axios.request({
+			method: "post",
+			url: `${API_ROOT}/user/refresh/`,
+			data: { "refresh": localStorage.getItem("refresh_token") }
+		}).then(refresh => {
+			localStorage.setItem("access_token", refresh.data.access);
+			localStorage.setItem("refresh_token", refresh.data.refresh);
+			return refresh.data.access;
+		}).finally(() => {
+			refreshInFlight = null;
+		});
+	}
+	return refreshInFlight;
+};
+
+const refreshAndRetry = async (params: AxiosRequestConfig) => {
+	const accessToken = await refreshAccessToken();
+	return axios.request({
+		...params,
+		headers: { ...params.headers, "Authorization": `JWT ${accessToken}` }
+	});
+};
+
 const useAxios = () => {
 	const [response, setResponse] = useState<AxiosResponse>();
 	const [error, setError] = useState<string>();
 	const [loading, setLoading] = useState(false);
 
-	const refreshAndRetry = async (params: AxiosRequestConfig) => {
-		const refresh = await axios.request({
-			method: "post",
-			url: `${API_ROOT}/user/refresh/`,
-			data: { "refresh": localStorage.getItem("refresh_token") }
-		});
-		localStorage.setItem("access_token", refresh.data.access);
-		localStorage.setItem("refresh_token", refresh.data.refresh);
-		return axios.request({
-			...params,
-			headers: { ...params.headers, "Authorization": `JWT ${refresh.data.access}` }
-		});
-	};
-
-	const operation = async (params: AxiosRequestConfig) => {
+	const operation = useCallback(async (params: AxiosRequestConfig) => {
 		setLoading(true);
 		setError(undefined);
 		try {
@@ -72,7 +87,7 @@ const useAxios = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	return { response, error, loading, operation };
 };

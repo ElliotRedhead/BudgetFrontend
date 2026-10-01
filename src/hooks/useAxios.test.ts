@@ -69,6 +69,31 @@ describe("useAxios", () => {
 		}));
 	});
 
+	it("shares one token refresh between requests that expire together", async () => {
+		localStorage.setItem("refresh_token", "single-use-refresh");
+		const request = vi.spyOn(axios, "request").mockImplementation(async config => {
+			if (config.url?.endsWith("/user/refresh/")){
+				return { status: 200, data: { access: "new-access", refresh: "new-refresh" } };
+			}
+			if ((config.headers as Record<string, string> | undefined)?.Authorization === "JWT new-access"){
+				return { status: 200, data: config.url };
+			}
+			throw expiredTokenError();
+		});
+		const { result: expensesRequest } = renderHook(() => useAxios());
+		const { result: summaryRequest } = renderHook(() => useAxios());
+
+		await act(() => Promise.all([
+			expensesRequest.current.operation({ method: "get", url: "/expenses/" }),
+			summaryRequest.current.operation({ method: "get", url: "/expenses/summary/" })
+		]));
+
+		const refreshCalls = request.mock.calls.filter(([config]) => config.url?.endsWith("/user/refresh/"));
+		expect(refreshCalls).toHaveLength(1);
+		expect(expensesRequest.current.response?.data).toBe("/expenses/");
+		expect(summaryRequest.current.response?.data).toBe("/expenses/summary/");
+	});
+
 	it("asks the user to log in again when the refresh fails", async () => {
 		localStorage.setItem("refresh_token", "revoked-refresh");
 		vi.spyOn(axios, "request")
