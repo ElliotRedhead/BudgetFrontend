@@ -4,25 +4,23 @@ import axios from "axios";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
+import { expenseDataContextValue, modalContextValue } from "../test/fixtures";
 import ExpenseItem from "./ExpenseItem";
+
+const groceries = { id: 7, name: "groceries", cost: 4235, date: "2026-07-01T11:30:00Z" };
 
 describe("ExpenseItem", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
 
-	it("deletes through the expense's detail URL, with its trailing slash", async () => {
+	it("deletes through the expense's detail URL, then refreshes the month", async () => {
 		const request = vi.spyOn(axios, "request").mockResolvedValue({ status: 204 });
-		const dispatch = vi.fn();
+		const contextValue = expenseDataContextValue();
 		render(
-			<ExpenseDataContext.Provider value={{ state: { isLoading: false, isErrored: false, budget: 0, expenses: [] }, dispatch }}>
+			<ExpenseDataContext.Provider value={contextValue}>
 				<ul>
-					<ExpenseItem
-						key="7"
-						id="7"
-						name="groceries"
-						cost={4235}
-						date="2026-09-14T12:00:00Z" />
+					<ExpenseItem expense={groceries} />
 				</ul>
 			</ExpenseDataContext.Provider>
 		);
@@ -33,33 +31,26 @@ describe("ExpenseItem", () => {
 			method: "delete",
 			url: expect.stringMatching(/\/expenses\/7\/$/)
 		}));
-		await waitFor(() => expect(dispatch).toHaveBeenCalledWith({ type: "DELETE_EXPENSE", payload: { id: "7" } }));
+		await waitFor(() => expect(contextValue.dispatch).toHaveBeenCalledWith({ type: "DELETE_EXPENSE", payload: { id: 7 } }));
+		expect(contextValue.refresh).toHaveBeenCalled();
+	});
+
+	it("shows the cost in pounds", () => {
+		render(
+			<ul>
+				<ExpenseItem expense={groceries} />
+			</ul>
+		);
+
+		expect(screen.getByText("£42.35")).toBeInTheDocument();
 	});
 
 	it("opens the editor with the expense's local time, not UTC", async () => {
 		const expenseDateSetter = vi.fn();
-		const modalContextValue = {
-			resetContext: vi.fn(),
-			modalVisibility: false,
-			toggleModalVisibility: vi.fn(),
-			expenseId: "",
-			expenseIdSetter: vi.fn(),
-			expenseName: "",
-			expenseNameSetter: vi.fn(),
-			expenseCost: 0,
-			expenseCostSetter: vi.fn(),
-			expenseDate: "",
-			expenseDateSetter
-		};
 		render(
-			<ModalContext.Provider value={modalContextValue}>
+			<ModalContext.Provider value={modalContextValue({ expenseDateSetter })}>
 				<ul>
-					<ExpenseItem
-						key="7"
-						id="7"
-						name="groceries"
-						cost={4235}
-						date="2026-07-01T11:30:00Z" />
+					<ExpenseItem expense={groceries} />
 				</ul>
 			</ModalContext.Provider>
 		);

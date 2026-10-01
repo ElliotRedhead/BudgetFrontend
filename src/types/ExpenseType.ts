@@ -1,6 +1,7 @@
 export interface ExpenseType {
-	id?: string;
+	id?: number;
 	name: string;
-	cost: string|number;
+	/** Whole pence. */
+	cost: number;
 	date: string;
 }

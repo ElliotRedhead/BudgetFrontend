@@ -1,27 +1,19 @@
-
 import { useContext } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
-import { ExpenseType } from "../types/ExpenseType";
+import { formatPence } from "../utilities/money";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 const ExpenseTotal = (): JSX.Element => {
 	const { state } = useContext(ExpenseDataContext);
-	const expensesTotal = (state.expenses?.reduce((total:number, item:ExpenseType) => total + Number(item.cost), 0))/100;
-
 
 	return (
 		<div className="alert alert-primary text-center">
 			{
-				state.isLoading ?
+				!state.summary ?
 					<LoadingSpinner />
 					:
 					<span>
-						{
-							expensesTotal < 0 ?
-								`Spent so far: - £${Math.abs(expensesTotal)}`
-								:
-								`Spent so far: £${expensesTotal}`
-						}
+						{`Spent: ${formatPence(state.summary.total)}`}
 					</span>
 			}
 		</div>

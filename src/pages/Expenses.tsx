@@ -6,6 +6,7 @@ import Remaining from "../components/Remaining";
 import ExpenseTotal from "../components/ExpenseTotal";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseFormModal from "../components/ExpenseFormModal";
+import MonthNavigator from "../components/MonthNavigator";
 import { ExpenseDataProvider } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import { toDateTimeInputValue } from "../utilities/dateTimeInput";
@@ -14,7 +15,7 @@ const Expenses = (): JSX.Element => {
 	const modalContext = useContext(ModalContext);
 	const resetContext = () => {
 
-		setExpenseId("");
+		setExpenseId(null);
 		setExpenseName("");
 		setExpenseCost(0);
 		setExpenseDate(toDateTimeInputValue(new Date().toISOString()));
@@ -28,7 +29,7 @@ const Expenses = (): JSX.Element => {
 	const [expenseName, setExpenseName] = useState(modalContext.expenseName);
 	const [expenseCost, setExpenseCost] = useState(modalContext.expenseCost);
 	const [expenseDate, setExpenseDate] = useState(modalContext.expenseDate);
-	const expenseIdSetter = (id: string) => {
+	const expenseIdSetter = (id: number | null) => {
 		setExpenseId(id);
 	};
 	const expenseNameSetter = (name: string) => {
@@ -66,7 +67,8 @@ const Expenses = (): JSX.Element => {
 					<h1 className="mt-3">
 						Budget Planner
 					</h1>
-					<div className="row">
+					<MonthNavigator />
+					<div className="row mt-3">
 						<div className="col-sm">
 							<Budget />
 						</div>

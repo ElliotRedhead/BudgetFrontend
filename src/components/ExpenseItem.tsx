@@ -4,53 +4,50 @@ import { TiDelete, TiPencil } from "react-icons/ti";
 import ModalContext from "../context/ModalContext";
 import useAxios from "../hooks/useAxios";
 import { API_ROOT } from "../constants";
+import { ExpenseType } from "../types/ExpenseType";
+import { authHeaders } from "../utilities/authHeaders";
 import { toDateTimeInputValue } from "../utilities/dateTimeInput";
+import { formatPence } from "../utilities/money";
 
 interface ExpenseProps {
-	key:string,
-	id:string,
-	name:string,
-	cost:number,
-	date:string
+	expense: ExpenseType
 }
 
-const ExpenseItem = (props:ExpenseProps): JSX.Element => {
+const ExpenseItem = ({ expense }: ExpenseProps): JSX.Element => {
 	const [editButtonVisibility, setEditButtonVisibility] = useState(false);
-	const { dispatch } = useContext(ExpenseDataContext);
+	const { dispatch, refresh } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 
-	const { id, name, cost, date } = props;
+	const { id, name, cost, date } = expense;
 	const parsedDate = (new Date(date)).toLocaleDateString();
 
 	const editOnClickHandler = () => {
 		setEditButtonVisibility(false);
-		modalContext.expenseIdSetter(id);
+		modalContext.expenseIdSetter(id ?? null);
 		modalContext.expenseNameSetter(name);
 		modalContext.expenseCostSetter(cost);
 		modalContext.expenseDateSetter(toDateTimeInputValue(date));
 		modalContext.toggleModalVisibility();
 	};
-	
-	const { response, loading, error, operation } = useAxios();
+
+	const { response, operation } = useAxios();
 
 	const handleDeleteExpense = () => {
 		operation({
 			method: "delete",
 			url: `${API_ROOT}/expenses/${id}/`,
-			headers: {
-				"Authorization": `JWT ${localStorage.getItem("access_token")}`
-			}
+			headers: authHeaders()
 		});
-	
 	};
 	useEffect(() => {
 		if (response && response.status === 204){
 			dispatch({
 				type: "DELETE_EXPENSE",
-				payload: { "id": id }
+				payload: { id }
 			});
+			refresh();
 		}
-	});
+	}, [response, dispatch, refresh, id]);
 
 
 	return (
@@ -77,12 +74,7 @@ const ExpenseItem = (props:ExpenseProps): JSX.Element => {
 
 				</div>
 				<span className="badge rounded-pill bg-primary mr-3">
-					{
-						cost < 0 ?
-							`-£${(Math.abs(cost)/100).toFixed(2)}`
-							:
-							`£${(cost/100).toFixed(2)}`
-					}
+					{formatPence(cost)}
 				</span>
 			</div>
 			<TiDelete

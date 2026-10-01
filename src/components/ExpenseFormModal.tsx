@@ -1,19 +1,18 @@
 import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
-import { ExpenseType } from "../types/ExpenseType";
 import Form from "react-bootstrap/Form";
 import useAxios from "../hooks/useAxios";
 import { API_ROOT } from "../constants";
 import { validateCost } from "../utilities/validateCost";
 import { fromDateTimeInputValue } from "../utilities/dateTimeInput";
+import { authHeaders } from "../utilities/authHeaders";
 
 const ExpenseFormModal = ():JSX.Element => {
-	const { response, loading, error, operation } = useAxios();
-	const { dispatch } = useContext(ExpenseDataContext);
+	const { response, operation } = useAxios();
+	const { dispatch, refresh } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 	const [name, setName] = useState(modalContext.expenseName);
-	const [cost, setCost] = useState(modalContext.expenseCost);
 	const [unvalidatedCost, setUnvalidatedCost] = useState<string>("0.00");
 	const [date, setDate] = useState(modalContext.expenseDate);
 	const expenseId = modalContext.expenseId;
@@ -21,7 +20,6 @@ const ExpenseFormModal = ():JSX.Element => {
 
 	useEffect(() => {
 		setName(modalContext.expenseName);
-		setCost(modalContext.expenseCost);
 		setDate(modalContext.expenseDate);
 		setUnvalidatedCost(String((modalContext.expenseCost/100).toFixed(2)));
 	}, [modalContext.modalVisibility]);
@@ -32,14 +30,13 @@ const ExpenseFormModal = ():JSX.Element => {
 				type: "ADD_EXPENSE",
 				payload: response.data
 			});
+			refresh();
 		}
-	}, [response]);
+	}, [response, dispatch, refresh]);
 
 	useEffect(() => {
-		setCost(Number(unvalidatedCost)*100);
 		if (unvalidatedCost !== undefined){
 			if (validateCost(unvalidatedCost)){
-				setCost(Number(unvalidatedCost)*100);
 				setFormEnabled(true);
 			} else {
 				setFormEnabled(false);
@@ -51,28 +48,15 @@ const ExpenseFormModal = ():JSX.Element => {
 	const onSubmit = (event: SyntheticEvent) => {
 		event.preventDefault();
 		if (formEnabled){
-			const expense:ExpenseType = {
-				id: expenseId,
-				name: name,
-				cost: unvalidatedCost|| cost,
-				date: date
-			};
-
-			let url = `${API_ROOT}/expenses/`;
-			let method = "post";
-			if (expenseId){
-				url = `${API_ROOT}/expenses/${expense.id}/`;
-				method = "patch";
-			}
 			operation({
-				method: method,
-				url: url,
+				method: expenseId ? "patch" : "post",
+				url: expenseId ? `${API_ROOT}/expenses/${expenseId}/` : `${API_ROOT}/expenses/`,
 				data: {
-					"name": expense.name,
-					"cost": Math.round(Number(expense.cost)*100),
-					"date": fromDateTimeInputValue(expense.date)
+					"name": name,
+					"cost": Math.round(Number(unvalidatedCost)*100),
+					"date": fromDateTimeInputValue(date)
 				},
-				headers: { "Authorization": `JWT ${localStorage.getItem("access_token")}` }
+				headers: authHeaders()
 			});
 
 			modalContext.toggleModalVisibility();

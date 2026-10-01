@@ -4,33 +4,46 @@ import ExpenseItem from "./ExpenseItem";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 const ExpenseList = (): JSX.Element => {
-	const { state } = useContext(ExpenseDataContext);
+	const { state, loadMore } = useContext(ExpenseDataContext);
+
+	if (state.isLoading){
+		return <LoadingSpinner />;
+	}
+	if (state.isErrored){
+		return (
+			<div
+				className="alert alert-danger"
+				role="alert">
+				Your expenses couldn&apos;t be loaded. Please try again.
+			</div>
+		);
+	}
+	if (!state.expenses.length){
+		return (
+			<p className="text-muted">
+				No expenses this month yet.
+			</p>
+		);
+	}
 	return (
-		<ul className="list-group">
+		<>
+			<ul className="list-group">
+				{state.expenses.map(expense => (
+					<ExpenseItem
+						key={expense.id}
+						expense={expense} />
+				))}
+			</ul>
 			{
-				state.isLoading ?
-					<LoadingSpinner />
-					:
-					<>
-						{
-							state.expenses?.map(expense => {
-								if (expense.id) {
-									return (
-										<ExpenseItem
-											key={expense.id}
-											id={expense.id}
-											name={expense.name}
-											cost={Number(expense.cost)}
-											date={expense.date} />
-									);
-								} else {
-									return; 
-								}
-							})
-						}
-					</>
+				state.nextPage &&
+				<button
+					type="button"
+					className="btn btn-link mt-2"
+					onClick={loadMore}>
+					Show more
+				</button>
 			}
-		</ul>
+		</>
 	);
 };
 

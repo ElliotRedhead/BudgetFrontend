@@ -1,32 +1,58 @@
-import { createContext, ReactNode, useEffect, useMemo, useReducer } from "react";
+import { createContext, ReactNode, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { API_ROOT } from "../constants";
 import useAxios from "../hooks/useAxios";
 import { ExpenseType } from "../types/ExpenseType";
+import { PaginatedResponse } from "../types/PaginatedResponse";
+import { MonthlySummary } from "../types/SummaryType";
+import { authHeaders } from "../utilities/authHeaders";
+import { startOfMonth, toMonthParam } from "../utilities/months";
 
-interface ExpenseDataContextType {
+// The API's largest page, so a typical month arrives in one request.
+const PAGE_SIZE = 100;
+
+export interface ExpenseDataContextType {
 	isLoading: boolean;
 	isErrored: boolean;
-	budget: number;
+	month: Date;
 	expenses: ExpenseType[];
+	nextPage: string | null;
+	summary: MonthlySummary | null;
 }
 
 type ExpenseDataAction =
-	| { type: "SET_EXPENSES"; payload: ExpenseType[] }
+	| { type: "SET_MONTH"; payload: Date }
+	| { type: "SET_EXPENSES"; payload: PaginatedResponse<ExpenseType> }
+	| { type: "APPEND_EXPENSES"; payload: PaginatedResponse<ExpenseType> }
+	| { type: "SET_SUMMARY"; payload: MonthlySummary }
 	| { type: "ADD_EXPENSE"; payload: ExpenseType }
-	| { type: "DELETE_EXPENSE"; payload: { id?: string } }
+	| { type: "DELETE_EXPENSE"; payload: { id?: number } }
 	| { type: "LOAD_FAILED" };
 
-const isValidExpense = (payload: ExpenseType) => (
-	typeof (payload.id) === "number" || typeof (payload.id) === "string"
-) &&
+const isValidExpense = (payload: ExpenseType) => typeof (payload.id) === "number" &&
 	typeof (payload.name) === "string" &&
 	typeof (payload.cost) === "number" &&
 	typeof (payload.date) === "string";
 
 export const ExpenseDataReducer = (state: ExpenseDataContextType, action: ExpenseDataAction): ExpenseDataContextType => {
 	switch (action.type){
+	case "SET_MONTH":
+		return { ...state, month: action.payload, isLoading: true, summary: null };
 	case "SET_EXPENSES":
-		return { ...state, isLoading: false, isErrored: false, expenses: action.payload };
+		return {
+			...state,
+			isLoading: false,
+			isErrored: false,
+			expenses: action.payload.results,
+			nextPage: action.payload.next
+		};
+	case "APPEND_EXPENSES":
+		return {
+			...state,
+			expenses: [...state.expenses, ...action.payload.results],
+			nextPage: action.payload.next
+		};
+	case "SET_SUMMARY":
+		return { ...state, summary: action.payload };
 	case "ADD_EXPENSE": {
 		if (!isValidExpense(action.payload)){
 			return state;
@@ -36,7 +62,7 @@ export const ExpenseDataReducer = (state: ExpenseDataContextType, action: Expens
 			...state,
 			expenses: isExistingExpense ?
 				state.expenses.map(expense => expense.id === action.payload.id ? action.payload : expense) :
-				[...state.expenses, action.payload]
+				[action.payload, ...state.expenses]
 		};
 	}
 	case "DELETE_EXPENSE":
@@ -54,46 +80,81 @@ export const ExpenseDataReducer = (state: ExpenseDataContextType, action: Expens
 interface ContextType {
 	state: ExpenseDataContextType;
 	dispatch: React.Dispatch<ExpenseDataAction>;
+
+	/** Reload the month's expenses and summary, e.g. after a change. */
+	refresh: () => void;
+
+	/** Fetch the next page of expenses, if there is one. */
+	loadMore: () => void;
 }
 
 export const ExpenseDataContext = createContext({} as ContextType);
 
-const initialState: ExpenseDataContextType = {
-	isLoading: true,
-	isErrored: false,
-	budget: 2000,
-	expenses: []
-};
-
 export const ExpenseDataProvider = (props: { children: ReactNode }) => {
-	const [state, dispatch] = useReducer(ExpenseDataReducer, initialState);
-	const { response, error, operation } = useAxios();
+	const [state, dispatch] = useReducer(ExpenseDataReducer, {
+		isLoading: true,
+		isErrored: false,
+		month: startOfMonth(new Date()),
+		expenses: [],
+		nextPage: null,
+		summary: null
+	});
+	const [reloadCount, setReloadCount] = useState(0);
+	const expenseRequest = useAxios();
+	const nextPageRequest = useAxios();
+	const summaryRequest = useAxios();
 
 	useEffect(() => {
-		operation({
+		const month = toMonthParam(state.month);
+		expenseRequest.operation({
 			method: "get",
 			url: `${API_ROOT}/expenses/`,
-			headers: {
-				"Authorization": `JWT ${localStorage.getItem("access_token")}`
-			}
+			params: { month, page_size: PAGE_SIZE },
+			headers: authHeaders()
 		});
-	// Load once when the page mounts.
+		summaryRequest.operation({
+			method: "get",
+			url: `${API_ROOT}/expenses/summary/`,
+			params: { month },
+			headers: authHeaders()
+		});
+	// Reload when the month changes or a refresh is requested.
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [state.month, reloadCount]);
 
 	useEffect(() => {
-		if (response){
-			dispatch({ type: "SET_EXPENSES", payload: response.data });
+		if (expenseRequest.response){
+			dispatch({ type: "SET_EXPENSES", payload: expenseRequest.response.data });
 		}
-	}, [response]);
+	}, [expenseRequest.response]);
 
 	useEffect(() => {
-		if (error){
+		if (nextPageRequest.response){
+			dispatch({ type: "APPEND_EXPENSES", payload: nextPageRequest.response.data });
+		}
+	}, [nextPageRequest.response]);
+
+	useEffect(() => {
+		if (summaryRequest.response){
+			dispatch({ type: "SET_SUMMARY", payload: summaryRequest.response.data });
+		}
+	}, [summaryRequest.response]);
+
+	useEffect(() => {
+		if (expenseRequest.error){
 			dispatch({ type: "LOAD_FAILED" });
 		}
-	}, [error]);
+	}, [expenseRequest.error]);
 
-	const contextValue = useMemo(() => ({ state, dispatch }), [state]);
+	const refresh = useCallback(() => setReloadCount(count => count + 1), []);
+	const { operation: requestNextPage } = nextPageRequest;
+	const loadMore = useCallback(() => {
+		if (state.nextPage){
+			requestNextPage({ method: "get", url: state.nextPage, headers: authHeaders() });
+		}
+	}, [state.nextPage, requestNextPage]);
+
+	const contextValue = useMemo(() => ({ state, dispatch, refresh, loadMore }), [state, refresh, loadMore]);
 
 	return (
 		<ExpenseDataContext.Provider value={contextValue}>
