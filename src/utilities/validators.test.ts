@@ -24,13 +24,13 @@ describe("validateEmail", () => {
 });
 
 describe("validatePassword", () => {
-	it("accepts a password at the minimum length", () => {
-		expect(validatePassword("123456").success).toBe(true);
+	it("accepts a password of 8 characters, the backend's minimum", () => {
+		expect(validatePassword("abcdefgh").success).toBe(true);
 	});
 
 	it("rejects a shorter password with a reason", () => {
-		const result = validatePassword("12345");
+		const result = validatePassword("abcdefg");
 		expect(result.success).toBe(false);
-		expect(result.reason).toHaveLength(1);
+		expect(result.reason).toEqual(["Password must be at least 8 characters."]);
 	});
 });
