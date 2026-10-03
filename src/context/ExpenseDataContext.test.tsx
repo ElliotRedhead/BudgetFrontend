@@ -10,7 +10,7 @@ import { ExpenseDataContext, ExpenseDataProvider, ExpenseDataReducer } from "./E
 describe("ExpenseDataReducer", () => {
 	it("replaces an edited expense without mutating the previous state", () => {
 		const previousState = loadedState();
-		const editedBus = { id: 2, name: "bus", cost: 300, date: "2026-09-02T08:00:00Z" };
+		const editedBus = { id: 2, name: "bus", cost: 300, category: "transport", date: "2026-09-02T08:00:00Z" };
 
 		const nextState = ExpenseDataReducer(previousState, { type: "ADD_EXPENSE", payload: editedBus });
 
@@ -19,7 +19,7 @@ describe("ExpenseDataReducer", () => {
 	});
 
 	it("puts a new expense at the top, like the API's newest-first order", () => {
-		const newExpense = { id: 3, name: "coffee", cost: 320, date: "2026-09-03T09:00:00Z" };
+		const newExpense = { id: 3, name: "coffee", cost: 320, category: "eating_out", date: "2026-09-03T09:00:00Z" };
 
 		const nextState = ExpenseDataReducer(loadedState(), { type: "ADD_EXPENSE", payload: newExpense });
 
@@ -42,7 +42,7 @@ describe("ExpenseDataReducer", () => {
 	it("appends the next page and remembers whether there's another", () => {
 		const nextState = ExpenseDataReducer(loadedState({ nextPage: "/expenses/?page=2" }), {
 			type: "APPEND_EXPENSES",
-			payload: { count: 3, next: null, previous: "/expenses/", results: [{ id: 9, name: "tea", cost: 150, date: "2026-09-04T09:00:00Z" }] }
+			payload: { count: 3, next: null, previous: "/expenses/", results: [{ id: 9, name: "tea", cost: 150, category: "eating_out", date: "2026-09-04T09:00:00Z" }] }
 		});
 
 		expect(nextState.expenses.map(expense => expense.id)).toEqual([1, 2, 9]);
@@ -91,6 +91,17 @@ const MonthView = () => {
 	);
 };
 
+const FilterButton = () => {
+	const { dispatch } = useContext(ExpenseDataContext);
+	return (
+		<button
+			type="button"
+			onClick={() => dispatch({ type: "SET_FILTERS", payload: { search: "bus", category: "transport" } })}>
+			Transport named bus
+		</button>
+	);
+};
+
 const renderMonthView = () => render(
 	<ExpenseDataProvider>
 		<MonthView />
@@ -102,7 +113,7 @@ const apiResponses = (config: AxiosRequestConfig) => {
 		return { status: 200, data: septemberSummary };
 	}
 	if (config.url?.includes("page=2")){
-		return { status: 200, data: { count: 3, next: null, previous: null, results: [{ id: 9, name: "tea", cost: 150, date: "2026-09-04T09:00:00Z" }] } };
+		return { status: 200, data: { count: 3, next: null, previous: null, results: [{ id: 9, name: "tea", cost: 150, category: "eating_out", date: "2026-09-04T09:00:00Z" }] } };
 	}
 	return { status: 200, data: { count: 3, next: "http://api/expenses/?page=2", previous: null, results: septemberExpenses } };
 };
@@ -141,6 +152,26 @@ describe("ExpenseDataProvider", () => {
 		await screen.findByText("rent, bus");
 		expect(request).toHaveBeenCalledWith(expect.objectContaining({ params: { month: "2026-08", page_size: 100 } }));
 		expect(request).toHaveBeenCalledWith(expect.objectContaining({ params: { month: "2026-08" } }));
+	});
+
+	it("searches and filters the month's expenses", async () => {
+		const request = vi.spyOn(axios, "request").mockImplementation(async config => apiResponses(config));
+		render(
+			<ExpenseDataProvider>
+				<FilterButton />
+				<MonthView />
+			</ExpenseDataProvider>
+		);
+		await screen.findByText("rent, bus");
+		request.mockClear();
+
+		await userEvent.click(screen.getByRole("button", { name: "Transport named bus" }));
+
+		await screen.findByText("rent, bus");
+		expect(request).toHaveBeenCalledTimes(1);
+		expect(request).toHaveBeenCalledWith(expect.objectContaining({
+			params: expect.objectContaining({ name__icontains: "bus", category: "transport" })
+		}));
 	});
 
 	it("appends the next page on request", async () => {

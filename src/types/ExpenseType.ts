@@ -3,5 +3,6 @@ export interface ExpenseType {
 	name: string;
 	/** Whole pence. */
 	cost: number;
+	category: string;
 	date: string;
 }

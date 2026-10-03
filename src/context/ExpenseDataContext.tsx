@@ -10,10 +10,16 @@ import { startOfMonth, toMonthParam } from "../utilities/months";
 // The API's largest page, so a typical month arrives in one request.
 const PAGE_SIZE = 100;
 
+export interface ExpenseFilters {
+	search: string;
+	category: string;
+}
+
 export interface ExpenseDataContextType {
 	isLoading: boolean;
 	isErrored: boolean;
 	month: Date;
+	filters: ExpenseFilters;
 	expenses: ExpenseType[];
 	nextPage: string | null;
 	summary: MonthlySummary | null;
@@ -21,6 +27,7 @@ export interface ExpenseDataContextType {
 
 type ExpenseDataAction =
 	| { type: "SET_MONTH"; payload: Date }
+	| { type: "SET_FILTERS"; payload: ExpenseFilters }
 	| { type: "SET_EXPENSES"; payload: PaginatedResponse<ExpenseType> }
 	| { type: "APPEND_EXPENSES"; payload: PaginatedResponse<ExpenseType> }
 	| { type: "SET_SUMMARY"; payload: MonthlySummary }
@@ -37,6 +44,8 @@ export const ExpenseDataReducer = (state: ExpenseDataContextType, action: Expens
 	switch (action.type){
 	case "SET_MONTH":
 		return { ...state, month: action.payload, isLoading: true, summary: null };
+	case "SET_FILTERS":
+		return { ...state, filters: action.payload, isLoading: true };
 	case "SET_EXPENSES":
 		return {
 			...state,
@@ -95,6 +104,7 @@ export const ExpenseDataProvider = (props: { children: ReactNode }) => {
 		isLoading: true,
 		isErrored: false,
 		month: startOfMonth(new Date()),
+		filters: { search: "", category: "" },
 		expenses: [],
 		nextPage: null,
 		summary: null
@@ -106,12 +116,6 @@ export const ExpenseDataProvider = (props: { children: ReactNode }) => {
 
 	useEffect(() => {
 		const month = toMonthParam(state.month);
-		expenseRequest.operation({
-			method: "get",
-			url: `${API_ROOT}/expenses/`,
-			params: { month, page_size: PAGE_SIZE },
-			headers: authHeaders()
-		});
 		summaryRequest.operation({
 			method: "get",
 			url: `${API_ROOT}/expenses/summary/`,
@@ -121,6 +125,23 @@ export const ExpenseDataProvider = (props: { children: ReactNode }) => {
 	// Reload when the month changes or a refresh is requested.
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [state.month, reloadCount]);
+
+	useEffect(() => {
+		const { search, category } = state.filters;
+		expenseRequest.operation({
+			method: "get",
+			url: `${API_ROOT}/expenses/`,
+			params: {
+				month: toMonthParam(state.month),
+				page_size: PAGE_SIZE,
+				...(search && { name__icontains: search }),
+				...(category && { category })
+			},
+			headers: authHeaders()
+		});
+	// Reload when the month or filters change, or a refresh is requested.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state.month, state.filters, reloadCount]);
 
 	useEffect(() => {
 		if (expenseRequest.response){

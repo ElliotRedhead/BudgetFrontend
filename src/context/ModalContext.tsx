@@ -13,6 +13,8 @@ const InitialModalContext:ModalContextType = {
 	expenseNameSetter: (name:string) => {},
 	expenseCost: 0,
 	expenseCostSetter: (cost:number) => {},
+	expenseCategory: "other",
+	expenseCategorySetter: (category: string) => {},
 	expenseDate: toDateTimeInputValue(new Date().toISOString()),
 	expenseDateSetter: (date:string) => {}
 };

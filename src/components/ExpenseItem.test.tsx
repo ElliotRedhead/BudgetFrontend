@@ -7,7 +7,7 @@ import ModalContext from "../context/ModalContext";
 import { expenseDataContextValue, modalContextValue } from "../test/fixtures";
 import ExpenseItem from "./ExpenseItem";
 
-const groceries = { id: 7, name: "groceries", cost: 4235, date: "2026-07-01T11:30:00Z" };
+const groceries = { id: 7, name: "groceries", cost: 4235, category: "groceries", date: "2026-07-01T11:30:00Z" };
 
 describe("ExpenseItem", () => {
 	afterEach(() => {
@@ -35,14 +35,15 @@ describe("ExpenseItem", () => {
 		expect(contextValue.refresh).toHaveBeenCalled();
 	});
 
-	it("shows the cost in pounds", () => {
+	it("shows the cost in pounds and the category's name", () => {
 		render(
 			<ul>
-				<ExpenseItem expense={groceries} />
+				<ExpenseItem expense={{ ...groceries, category: "eating_out" }} />
 			</ul>
 		);
 
 		expect(screen.getByText("£42.35")).toBeInTheDocument();
+		expect(screen.getByText("Eating out")).toBeInTheDocument();
 	});
 
 	it("opens the editor with the expense's local time, not UTC", async () => {

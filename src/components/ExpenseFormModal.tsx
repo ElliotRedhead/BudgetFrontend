@@ -3,7 +3,7 @@ import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import Form from "react-bootstrap/Form";
 import useAxios from "../hooks/useAxios";
-import { API_ROOT } from "../constants";
+import { API_ROOT, CATEGORIES } from "../constants";
 import { validateCost } from "../utilities/validateCost";
 import { fromDateTimeInputValue } from "../utilities/dateTimeInput";
 import { authHeaders } from "../utilities/authHeaders";
@@ -14,12 +14,14 @@ const ExpenseFormModal = ():JSX.Element => {
 	const modalContext = useContext(ModalContext);
 	const [name, setName] = useState(modalContext.expenseName);
 	const [unvalidatedCost, setUnvalidatedCost] = useState<string>("0.00");
+	const [category, setCategory] = useState(modalContext.expenseCategory);
 	const [date, setDate] = useState(modalContext.expenseDate);
 	const expenseId = modalContext.expenseId;
 	const [formEnabled, setFormEnabled] = useState(true);
 
 	useEffect(() => {
 		setName(modalContext.expenseName);
+		setCategory(modalContext.expenseCategory);
 		setDate(modalContext.expenseDate);
 		setUnvalidatedCost(String((modalContext.expenseCost/100).toFixed(2)));
 	}, [modalContext.modalVisibility]);
@@ -53,6 +55,7 @@ const ExpenseFormModal = ():JSX.Element => {
 				url: expenseId ? `${API_ROOT}/expenses/${expenseId}/` : `${API_ROOT}/expenses/`,
 				data: {
 					"name": name,
+					"category": category,
 					"cost": Math.round(Number(unvalidatedCost)*100),
 					"date": fromDateTimeInputValue(date)
 				},
@@ -99,7 +102,7 @@ const ExpenseFormModal = ():JSX.Element => {
 										onChange={event => setName(event.target.value)} />
 								</div>
 								<div className="col-sm">
-									<label htmlFor="Cost">
+									<label htmlFor="cost">
 										Cost (£)
 									</label>
 									<input
@@ -117,6 +120,7 @@ const ExpenseFormModal = ():JSX.Element => {
 										Date
 									</label>
 									<Form.Control
+										id="date"
 										type="datetime-local"
 										onChange={event => {
 											setDate(event.target.value);
@@ -125,7 +129,24 @@ const ExpenseFormModal = ():JSX.Element => {
 								</div>
 							</div>
 							<div className="row mt-3">
-								<div className="col-sm" />
+								<div className="col-sm">
+									<label htmlFor="category">
+										Category
+									</label>
+									<select
+										id="category"
+										className="form-select"
+										value={category}
+										onChange={event => setCategory(event.target.value)}>
+										{CATEGORIES.map(option => (
+											<option
+												key={option.value}
+												value={option.value}>
+												{option.label}
+											</option>
+										))}
+									</select>
+								</div>
 							</div>
 							<div className="modal-footer">
 								<button

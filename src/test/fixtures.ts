@@ -3,8 +3,8 @@ import { ExpenseDataContextType } from "../context/ExpenseDataContext";
 import { ModalContextType } from "../types/ModalContextType";
 
 export const septemberExpenses = [
-	{ id: 1, name: "rent", cost: 95000, date: "2026-09-01T12:00:00Z" },
-	{ id: 2, name: "bus", cost: 275, date: "2026-09-02T08:00:00Z" }
+	{ id: 1, name: "rent", cost: 95000, category: "housing", date: "2026-09-01T12:00:00Z" },
+	{ id: 2, name: "bus", cost: 275, category: "transport", date: "2026-09-02T08:00:00Z" }
 ];
 
 export const septemberSummary = {
@@ -20,6 +20,7 @@ export const loadedState = (overrides: Partial<ExpenseDataContextType> = {}): Ex
 	isLoading: false,
 	isErrored: false,
 	month: new Date(2026, 8, 1),
+	filters: { search: "", category: "" },
 	expenses: septemberExpenses,
 	nextPage: null,
 	summary: septemberSummary,
@@ -43,6 +44,8 @@ export const modalContextValue = (overrides: Partial<ModalContextType> = {}): Mo
 	expenseNameSetter: vi.fn(),
 	expenseCost: 0,
 	expenseCostSetter: vi.fn(),
+	expenseCategory: "other",
+	expenseCategorySetter: vi.fn(),
 	expenseDate: "",
 	expenseDateSetter: vi.fn(),
 	...overrides

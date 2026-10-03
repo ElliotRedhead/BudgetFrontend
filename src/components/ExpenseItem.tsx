@@ -3,7 +3,7 @@ import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import { TiDelete, TiPencil } from "react-icons/ti";
 import ModalContext from "../context/ModalContext";
 import useAxios from "../hooks/useAxios";
-import { API_ROOT } from "../constants";
+import { API_ROOT, categoryLabel } from "../constants";
 import { ExpenseType } from "../types/ExpenseType";
 import { authHeaders } from "../utilities/authHeaders";
 import { toDateTimeInputValue } from "../utilities/dateTimeInput";
@@ -18,7 +18,7 @@ const ExpenseItem = ({ expense }: ExpenseProps): JSX.Element => {
 	const { dispatch, refresh } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
 
-	const { id, name, cost, date } = expense;
+	const { id, name, cost, category, date } = expense;
 	const parsedDate = (new Date(date)).toLocaleDateString();
 
 	const editOnClickHandler = () => {
@@ -26,6 +26,7 @@ const ExpenseItem = ({ expense }: ExpenseProps): JSX.Element => {
 		modalContext.expenseIdSetter(id ?? null);
 		modalContext.expenseNameSetter(name);
 		modalContext.expenseCostSetter(cost);
+		modalContext.expenseCategorySetter(category);
 		modalContext.expenseDateSetter(toDateTimeInputValue(date));
 		modalContext.toggleModalVisibility();
 	};
@@ -65,9 +66,14 @@ const ExpenseItem = ({ expense }: ExpenseProps): JSX.Element => {
 				}}
 				role="button"
 				tabIndex={0}>
-				<div className="text-capitalize">
-					{editButtonVisibility && <TiPencil className="me-3" /> }
-					{`${name}`}
+				<div>
+					<div className="text-capitalize">
+						{editButtonVisibility && <TiPencil className="me-3" /> }
+						{`${name}`}
+					</div>
+					<div className="small text-muted">
+						{categoryLabel(category)}
+					</div>
 				</div>
 				<div>
 					{`${parsedDate}`}

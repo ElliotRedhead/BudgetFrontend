@@ -7,6 +7,7 @@ import ExpenseTotal from "../components/ExpenseTotal";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseFormModal from "../components/ExpenseFormModal";
 import MonthNavigator from "../components/MonthNavigator";
+import ExpenseFilters from "../components/ExpenseFilters";
 import { ExpenseDataProvider } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import { toDateTimeInputValue } from "../utilities/dateTimeInput";
@@ -18,6 +19,7 @@ const Expenses = (): JSX.Element => {
 		setExpenseId(null);
 		setExpenseName("");
 		setExpenseCost(0);
+		setExpenseCategory("other");
 		setExpenseDate(toDateTimeInputValue(new Date().toISOString()));
 	};
 
@@ -28,6 +30,7 @@ const Expenses = (): JSX.Element => {
 	const [expenseId, setExpenseId] = useState(modalContext.expenseId);
 	const [expenseName, setExpenseName] = useState(modalContext.expenseName);
 	const [expenseCost, setExpenseCost] = useState(modalContext.expenseCost);
+	const [expenseCategory, setExpenseCategory] = useState(modalContext.expenseCategory);
 	const [expenseDate, setExpenseDate] = useState(modalContext.expenseDate);
 	const expenseIdSetter = (id: number | null) => {
 		setExpenseId(id);
@@ -37,6 +40,9 @@ const Expenses = (): JSX.Element => {
 	};
 	const expenseCostSetter = (cost: number) => {
 		setExpenseCost(cost);
+	};
+	const expenseCategorySetter = (category: string) => {
+		setExpenseCategory(category);
 	};
 	const expenseDateSetter = (date: string) => {
 		setExpenseDate(date);
@@ -53,11 +59,13 @@ const Expenses = (): JSX.Element => {
 			expenseNameSetter,
 			expenseCost,
 			expenseCostSetter,
+			expenseCategory,
+			expenseCategorySetter,
 			expenseDate,
 			expenseDateSetter
 		};
 		return ModalContextProviderValues;
-	}, [modalVisibility, expenseId, expenseName, expenseCost, expenseDate, expenseDateSetter]);
+	}, [modalVisibility, expenseId, expenseName, expenseCost, expenseCategory, expenseDate, expenseDateSetter]);
 
 	return (
 		<ExpenseDataProvider>
@@ -82,6 +90,7 @@ const Expenses = (): JSX.Element => {
 					<h3 className="mt-3">
 						Expenses
 					</h3>
+					<ExpenseFilters />
 					<div className="row mt-3">
 						<div className="col-sm">
 							<ExpenseList />
