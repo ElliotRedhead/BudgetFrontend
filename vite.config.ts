@@ -15,6 +15,7 @@ export default defineConfig({
 	preview: { port: 3000 },
 	test: {
 		environment: "jsdom",
+		include: ["src/**/*.test.{ts,tsx}"],
 		// A fixed zone with daylight saving makes date handling tests meaningful.
 		env: { TZ: "Europe/London" },
 		setupFiles: ["src/test/setup.ts"]
