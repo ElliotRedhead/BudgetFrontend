@@ -8,7 +8,6 @@ const SESSION_EXPIRED_ERROR = "Your session has expired, please log in again.";
 /**
  * Turn a failed request into a message for the user, preferring the API's own
  * explanation (e.g. "No active account found..." or a field's validation errors).
- *
  * @param requestError Whatever the request threw
  * @returns A readable message
  */

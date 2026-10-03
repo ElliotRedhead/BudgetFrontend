@@ -1,6 +1,5 @@
 /**
  * Format an instant for a datetime-local input, which shows local time.
- *
  * @param isoTimestamp An ISO 8601 timestamp, e.g. from the API
  * @returns The local date and time as "YYYY-MM-DDTHH:mm"
  */
@@ -12,7 +11,6 @@ export const toDateTimeInputValue = (isoTimestamp: string) => {
 
 /**
  * Convert a datetime-local input's value back to an instant for the API.
- *
  * @param inputValue Local date and time as "YYYY-MM-DDTHH:mm"
  * @returns An ISO 8601 timestamp in UTC
  */

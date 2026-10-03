@@ -6,6 +6,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { LOGIN, REGISTER } from "../constants";
 import AuthenticationForm from "./AuthenticationForm";
 
+const expensesPage = (
+	<p>
+		Expenses page
+	</p>
+);
+
 const renderForm = (authMode: string) => render(
 	<MemoryRouter initialEntries={[`/${authMode}`]}>
 		<Routes>
@@ -14,9 +20,7 @@ const renderForm = (authMode: string) => render(
 				element={<AuthenticationForm authMode={authMode} />} />
 			<Route
 				path="/expenses"
-				element={<p>
-					Expenses page
-				</p>} />
+				element={expensesPage} />
 		</Routes>
 	</MemoryRouter>
 );
