@@ -92,8 +92,11 @@ const Expenses = (): JSX.Element => {
 					</h3>
 					<ExpenseFilters />
 					<div className="row mt-3">
-						<div className="col-sm">
+						<div className="col-lg-8">
 							<ExpenseList />
+						</div>
+						<div className="col-lg-4">
+							<ExpensePie />
 						</div>
 					</div>
 				</div>
@@ -107,9 +110,6 @@ const Expenses = (): JSX.Element => {
 						}}>
 						Add new expense
 					</button>
-				</div>
-				<div className="vh-100">
-					{/* <ExpensePie /> */}
 				</div>
 			</ModalContext.Provider>
 		</ExpenseDataProvider>

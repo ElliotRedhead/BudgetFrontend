@@ -5,6 +5,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { septemberExpenses, septemberSummary } from "../test/fixtures";
 import Expenses from "./Expenses";
 
+// jsdom has no canvas for the pie chart.
+vi.mock("react-chartjs-2", () => ({ Pie: () => null }));
+
 const apiResponses = async (config: AxiosRequestConfig) => {
 	if (config.url?.endsWith("/expenses/summary/")){
 		return { status: 200, data: septemberSummary };
