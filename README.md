@@ -1,70 +1,81 @@
-# Getting Started with Create React App
+![Frontend CI](https://github.com/ElliotRedhead/BudgetFrontend/actions/workflows/ci.yml/badge.svg)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# BudgetFrontend
 
-## Available Scripts
+The web app for **Budget**, a personal budgeting tool: log what you spend, set a monthly budget, and see where the money goes. Built with React 18, TypeScript and Vite, styled with Bootstrap.
 
-In the project directory, you can run:
+It talks to the Django REST API in [BudgetBackend](https://github.com/ElliotRedhead/BudgetBackend).
 
-### `npm start`
+![The expenses page for September 2026, showing the budget, what's left, the month's expenses and a pie chart of spending by category](docs/expenses.png)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **One month at a time:** move between months. Budget, spent and remaining come from the API's monthly summary.
+- **Monthly budget:** set or change it from the page. A month without its own budget shows the one it carries over from.
+- **Expenses:** add, edit and delete with a category, cost and date. Times stay in your local time zone.
+- **Search and filter** the month by name or category.
+- **Spending by category** as a pie chart.
+- **Recurring expenses:** manage monthly bills on their own page, then add them to any month in one click.
 
-### `npm test`
+  ![The recurring expenses page listing rent, energy, broadband, phone and gym, each with a switch to pause it](docs/recurring.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **CSV export and import** of a month's expenses. Rejected rows are listed with the reason.
+- **Accounts** with JWT authentication. An expired access token is refreshed once for all waiting requests, and logging out revokes the refresh token.
 
-### `npm run build`
+## Getting started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### With the backend, in Docker
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The quickest way to run everything is from BudgetBackend, with both repositories cloned side by side:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```sh
+git clone https://github.com/ElliotRedhead/BudgetBackend.git
+git clone https://github.com/ElliotRedhead/BudgetFrontend.git
+cd BudgetBackend
+docker compose up --build
+```
 
-### `npm run eject`
+Then open http://localhost:3000 and log in as `demo@example.com` / `demo-budget-2026`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### On its own
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Requires Node 24, and the API running on http://localhost:8000 (see [BudgetBackend](https://github.com/ElliotRedhead/BudgetBackend#api-only-without-docker)).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```sh
+cp .env.template .env   # VITE_API_ROOT points at the API
+npm install
+npm run dev             # http://localhost:3000
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Scripts
 
-## Learn More
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server with hot reloading |
+| `npm run build` | Type check and build for production into `dist/` |
+| `npm run lint` | ESLint (typescript-eslint, React, React Hooks, jsx-a11y, JSDoc) |
+| `npm run typecheck` | TypeScript, without emitting |
+| `npm test` | Vitest unit and component tests (add `-- --run` to run once) |
+| `npm run e2e` | Playwright end-to-end test against a running API |
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## How it's built
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **State:** `ExpenseDataContext` holds the selected month, filters, the paged expense list and the monthly summary in a reducer, and reloads them after any change. `useAxios` wraps requests with loading and error state, turns API errors into readable messages, and refreshes an expired access token once for all waiting requests.
+- **Money:** the API works in whole pence. The UI converts to and from pounds only at the edges (`formatPence`, form submission), so no floating-point totals are shown.
+- **Dates:** `datetime-local` inputs work in local time and the API in UTC. `dateTimeInput.ts` converts at the boundary, and tests run in `Europe/London` to cover GMT and BST.
+- **Tests:** Vitest and Testing Library cover the hooks, context and components, with API calls stubbed. One Playwright test drives a real browser against the real API: register, set a budget, add an expense and delete it. CI runs lint, type checks, unit tests, the build and the end-to-end test, the last against BudgetBackend's `main` branch.
 
-### Code Splitting
+```
+src/
+├── components/   UI pieces (tiles, list, form, filters, chart, CSV and recurring actions)
+├── context/      ExpenseDataContext (month data) and ModalContext (expense form)
+├── hooks/        useAxios
+├── pages/        Authentication, Expenses and RecurringExpenses
+├── utilities/    money, month, date and validation helpers
+└── types/        API response types
+e2e/              Playwright tests
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## License
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[GPL-3.0](LICENSE)
