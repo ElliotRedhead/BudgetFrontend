@@ -101,10 +101,8 @@ const Expenses = (): JSX.Element => {
 					<button
 						type="button"
 						className="btn btn-primary mt-2"
-						data-bs-dismiss="modal"
-						aria-label="Open"
 						onClick={() => {
-							modalContext.resetContext();
+							resetContext();
 							toggleModalVisibility();
 						}}>
 						Add new expense
