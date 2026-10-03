@@ -2,6 +2,7 @@ export interface ModalContextType {
 	resetContext: () => void;
 	modalVisibility: boolean;
 	toggleModalVisibility: () => void;
+
 	/** The expense being edited, or null when adding a new one. */
 	expenseId: number | null;
 	expenseIdSetter: (id: number | null) => void;

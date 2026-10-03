@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import Expenses from "./pages/Expenses";
+import RecurringExpenses from "./pages/RecurringExpenses";
 import Authentication from "./pages/Authentication";
 import { LOGIN, REGISTER } from "./constants";
 import jwtDecode from "jwt-decode";
@@ -61,6 +62,13 @@ const App = () => {
 									</NavItem>
 									<NavItem>
 										<NavLink
+											className="nav-link"
+											to="/recurring">
+											Recurring
+										</NavLink>
+									</NavItem>
+									<NavItem>
+										<NavLink
 											to="/login"
 											className="nav-link"
 											onClick={Logout}
@@ -101,6 +109,9 @@ const App = () => {
 					<Route
 						path="/expenses"
 						element={<Expenses />} />
+					<Route
+						path="/recurring"
+						element={<RecurringExpenses />} />
 				</Route>
 				<Route
 					path="/login"

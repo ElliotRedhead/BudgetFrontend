@@ -9,6 +9,7 @@ import ExpenseFormModal from "../components/ExpenseFormModal";
 import MonthNavigator from "../components/MonthNavigator";
 import ExpenseFilters from "../components/ExpenseFilters";
 import CsvActions from "../components/CsvActions";
+import ApplyRecurringButton from "../components/ApplyRecurringButton";
 import { ExpenseDataProvider } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import { toDateTimeInputValue } from "../utilities/dateTimeInput";
@@ -111,6 +112,7 @@ const Expenses = (): JSX.Element => {
 						}}>
 						Add new expense
 					</button>
+					<ApplyRecurringButton />
 					<CsvActions />
 				</div>
 			</ModalContext.Provider>
