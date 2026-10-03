@@ -1,4 +1,4 @@
-import { SyntheticEvent, useContext, useEffect, useState } from "react";
+import { SyntheticEvent, useContext, useState } from "react";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
 import Form from "react-bootstrap/Form";
@@ -9,59 +9,37 @@ import { fromDateTimeInputValue } from "../utilities/dateTimeInput";
 import { authHeaders } from "../utilities/authHeaders";
 
 const ExpenseFormModal = ():JSX.Element => {
-	const { response, operation } = useAxios();
+	const { error, loading, operation } = useAxios();
 	const { dispatch, refresh } = useContext(ExpenseDataContext);
 	const modalContext = useContext(ModalContext);
+	// The page remounts this form each time it opens, so these start from the
+	// expense being edited (or blank values for a new one).
 	const [name, setName] = useState(modalContext.expenseName);
-	const [unvalidatedCost, setUnvalidatedCost] = useState<string>("0.00");
+	const [unvalidatedCost, setUnvalidatedCost] = useState((modalContext.expenseCost / 100).toFixed(2));
 	const [category, setCategory] = useState(modalContext.expenseCategory);
 	const [date, setDate] = useState(modalContext.expenseDate);
 	const expenseId = modalContext.expenseId;
-	const [formEnabled, setFormEnabled] = useState(true);
+	const formEnabled = validateCost(unvalidatedCost) && !loading;
 
-	useEffect(() => {
-		setName(modalContext.expenseName);
-		setCategory(modalContext.expenseCategory);
-		setDate(modalContext.expenseDate);
-		setUnvalidatedCost(String((modalContext.expenseCost/100).toFixed(2)));
-	}, [modalContext.modalVisibility]);
-
-	useEffect(() => {
-		if (response && (response?.status === 200 || response?.status === 201)){
-			dispatch({
-				type: "ADD_EXPENSE",
-				payload: response.data
-			});
-			refresh();
-		}
-	}, [response, dispatch, refresh]);
-
-	useEffect(() => {
-		if (unvalidatedCost !== undefined){
-			if (validateCost(unvalidatedCost)){
-				setFormEnabled(true);
-			} else {
-				setFormEnabled(false);
-			}
-		}
-	}, [unvalidatedCost]);
-
-
-	const onSubmit = (event: SyntheticEvent) => {
+	const onSubmit = async (event: SyntheticEvent) => {
 		event.preventDefault();
-		if (formEnabled){
-			operation({
-				method: expenseId ? "patch" : "post",
-				url: expenseId ? `${API_ROOT}/expenses/${expenseId}/` : `${API_ROOT}/expenses/`,
-				data: {
-					"name": name,
-					"category": category,
-					"cost": Math.round(Number(unvalidatedCost)*100),
-					"date": fromDateTimeInputValue(date)
-				},
-				headers: authHeaders()
-			});
-
+		if (!formEnabled){
+			return;
+		}
+		const saved = await operation({
+			method: expenseId ? "patch" : "post",
+			url: expenseId ? `${API_ROOT}/expenses/${expenseId}/` : `${API_ROOT}/expenses/`,
+			data: {
+				"name": name,
+				"category": category,
+				"cost": Math.round(Number(unvalidatedCost)*100),
+				"date": fromDateTimeInputValue(date)
+			},
+			headers: authHeaders()
+		});
+		if (saved){
+			dispatch({ type: "ADD_EXPENSE", payload: saved.data });
+			refresh();
 			modalContext.toggleModalVisibility();
 		}
 	};
@@ -148,6 +126,14 @@ const ExpenseFormModal = ():JSX.Element => {
 									</select>
 								</div>
 							</div>
+							{
+								error &&
+								<div
+									className="alert alert-danger mt-3 mb-0"
+									role="alert">
+									{error}
+								</div>
+							}
 							<div className="modal-footer">
 								<button
 									type="button"

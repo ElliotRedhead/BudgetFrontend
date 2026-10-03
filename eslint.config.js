@@ -15,6 +15,7 @@ export default tseslint.config(
 			js.configs.recommended,
 			tseslint.configs.recommended,
 			react.configs.flat.recommended,
+			reactHooks.configs.flat.recommended,
 			jsdoc.configs["flat/recommended-typescript"],
 			jsxA11y.flatConfigs.recommended
 		],
@@ -23,15 +24,13 @@ export default tseslint.config(
 			sourceType: "module",
 			globals: { ...globals.browser, ...globals.node }
 		},
-		plugins: { "@stylistic": stylistic, "react-hooks": reactHooks },
+		plugins: { "@stylistic": stylistic },
 		settings: { react: { version: "detect" } },
 		rules: {
 			"@stylistic/indent": ["error", "tab", { SwitchCase: 0 }],
 			"@stylistic/linebreak-style": ["error", "unix"],
 			"@stylistic/quotes": ["error", "double"],
 			"@stylistic/semi": ["error", "always"],
-			"react-hooks/rules-of-hooks": "error",
-			"react-hooks/exhaustive-deps": "warn",
 			"@typescript-eslint/no-explicit-any": "warn",
 			"no-empty-function": "off",
 			"@typescript-eslint/no-empty-function": "off",

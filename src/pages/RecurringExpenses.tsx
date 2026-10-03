@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { API_ROOT, CATEGORIES, categoryLabel } from "../constants";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
@@ -15,26 +15,30 @@ const RecurringExpenses = (): JSX.Element => {
 	const [category, setCategory] = useState("other");
 	const [cost, setCost] = useState("");
 	const [dayOfMonth, setDayOfMonth] = useState("1");
+	const [reloadCount, setReloadCount] = useState(0);
 	const listRequest = useAxios();
 	const changeRequest = useAxios();
 	const { operation: requestList } = listRequest;
 	const isFormValid = name.trim() !== "" && POUNDS_PATTERN.test(cost);
 
-	const loadRecurringExpenses = useCallback(async () => {
-		const loaded = await requestList({
+	const loadRecurringExpenses = () => setReloadCount(count => count + 1);
+
+	useEffect(() => {
+		let isCurrent = true;
+		requestList({
 			method: "get",
 			url: RECURRING_URL,
 			params: { page_size: 100 },
 			headers: authHeaders()
+		}).then(loaded => {
+			if (loaded && isCurrent){
+				setRecurringExpenses(loaded.data.results);
+			}
 		});
-		if (loaded){
-			setRecurringExpenses(loaded.data.results);
-		}
-	}, [requestList]);
-
-	useEffect(() => {
-		loadRecurringExpenses();
-	}, [loadRecurringExpenses]);
+		return () => {
+			isCurrent = false;
+		};
+	}, [requestList, reloadCount]);
 
 	const addRecurringExpense = async (event: FormEvent) => {
 		event.preventDefault();

@@ -72,7 +72,7 @@ const Expenses = (): JSX.Element => {
 	return (
 		<ExpenseDataProvider>
 			<ModalContext.Provider value={ModalContextProviderValues}>
-				<ExpenseFormModal />
+				<ExpenseFormModal key={String(modalVisibility)} />
 				<div className="container">
 					<h1 className="mt-3">
 						Budget Planner

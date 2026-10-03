@@ -13,66 +13,18 @@ interface AuthenticationProps {
 
 const AuthenticationForm = ({ authMode }:AuthenticationProps) => {
 	const [email, setEmail] = useState<string>("");
-	const [emailError, setEmailError] = useState<string|null>();
 	const [password, setPassword] = useState<string>("");
-	const [passwordError, setPasswordError] = useState<string[]>([]);
 	const [confirmPassword, setConfirmPassword] = useState<string>("");
-	const [confirmPasswordError, setConfirmPasswordError] = useState<string|null>();
-	const [headingText, setHeadingText] = useState<string>();
-	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const { response, loading, error, operation } = useAxios();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		if (authMode === REGISTER){
-			setHeadingText("Create a new account");
-		} else {
-			setHeadingText("Log in to your account");
-		}
-	}, [authMode]);
-
-	useEffect(() => {
-		if (email && validateEmail(email)) {
-			setEmailError(null);
-		} else {
-			setEmailError("Please enter a valid email.");
-		}
-		if (!password) {
-			setPasswordError([]);
-		} else {
-			const passwordValidation = validatePassword(password);
-			if (passwordValidation.success) {
-				setPasswordError([]);
-			} else {
-				if (passwordValidation.reason){
-					setPasswordError(passwordValidation.reason);
-				}
-			}
-		}
-	}, [email, password]);
-
-	useEffect(() => {
-		if (emailError || passwordError.length || confirmPasswordError){
-			setSubmitDisabled(true);
-		} else {
-			setSubmitDisabled(false);
-		}
-	}, [emailError, passwordError, confirmPasswordError]
-	);
-
-	useEffect(() => {
-		if (authMode === REGISTER){
-			if (!confirmPassword || !password) {
-				setConfirmPasswordError("");
-			} else {
-				if (password !== confirmPassword) {
-					setConfirmPasswordError("The passwords must match.");
-				} else {
-					setConfirmPasswordError("");
-				}
-			}
-		}
-	}, [authMode, password, confirmPassword]);
+	const headingText = authMode === REGISTER ? "Create a new account" : "Log in to your account";
+	const emailError = email && validateEmail(email) ? null : "Please enter a valid email.";
+	const passwordError = password ? validatePassword(password).reason ?? [] : [];
+	const confirmPasswordError = authMode === REGISTER && password && confirmPassword && password !== confirmPassword ?
+		"The passwords must match." :
+		"";
+	const submitDisabled = Boolean(emailError || passwordError.length || confirmPasswordError);
 
 	const formSubmit = async (event:FormEvent) => {
 		event.preventDefault();

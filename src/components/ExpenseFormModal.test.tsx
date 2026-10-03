@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios, { AxiosError, AxiosHeaders, AxiosResponse } from "axios";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ExpenseDataContext } from "../context/ExpenseDataContext";
 import ModalContext from "../context/ModalContext";
@@ -65,5 +65,31 @@ describe("ExpenseFormModal", () => {
 			url: expect.stringMatching(/\/expenses\/4\/$/),
 			data: expect.objectContaining({ cost: 95000, category: "housing" })
 		}));
+	});
+
+	it("stays open and explains a rejected save", async () => {
+		vi.spyOn(axios, "request").mockRejectedValue(new AxiosError("Bad Request", "ERR_BAD_REQUEST", undefined, undefined, {
+			status: 400,
+			statusText: "Bad Request",
+			headers: {},
+			config: { headers: new AxiosHeaders() },
+			data: { cost: ["Ensure this value is greater than or equal to 0."] }
+		} as AxiosResponse));
+		const modalValue = modalContextValue({ modalVisibility: true, expenseDate: "2026-07-01T08:30" });
+		render(
+			<ExpenseDataContext.Provider value={expenseDataContextValue()}>
+				<ModalContext.Provider value={modalValue}>
+					<ExpenseFormModal />
+				</ModalContext.Provider>
+			</ExpenseDataContext.Provider>
+		);
+
+		await userEvent.type(screen.getByLabelText("Name"), "Refund");
+		await userEvent.clear(screen.getByLabelText("Cost (£)"));
+		await userEvent.type(screen.getByLabelText("Cost (£)"), "-5.00");
+		await userEvent.click(screen.getByRole("button", { name: "Save expense" }));
+
+		expect(await screen.findByRole("alert")).toHaveTextContent("Ensure this value is greater than or equal to 0.");
+		expect(modalValue.toggleModalVisibility).not.toHaveBeenCalled();
 	});
 });
