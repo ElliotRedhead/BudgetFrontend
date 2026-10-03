@@ -37,6 +37,16 @@ describe("describeRequestError", () => {
 		);
 	});
 
+	it("lists CSV import errors by row", () => {
+		const importError = apiError(400, {
+			rows: { 3: { category: ["\"spaceship\" is not a valid choice."] }, 4: { cost: ["Enter an amount like 12.34."] } }
+		});
+
+		expect(describeRequestError(importError)).toBe(
+			"Row 3: \"spaceship\" is not a valid choice. Row 4: Enter an amount like 12.34."
+		);
+	});
+
 	it("falls back to a connection message for server and network errors", () => {
 		expect(describeRequestError(apiError(500, "<html>"))).toBe("A connection error occurred, please try again.");
 		expect(describeRequestError(new Error("Network Error"))).toBe("A connection error occurred, please try again.");

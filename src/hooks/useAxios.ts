@@ -20,6 +20,12 @@ export const describeRequestError = (requestError: unknown) => {
 	if (typeof data?.detail === "string"){
 		return data.detail;
 	}
+	// CSV imports report errors per row: { rows: { "3": { cost: ["..."] } } }.
+	if (data?.rows && typeof data.rows === "object"){
+		return Object.entries(data.rows as Record<string, Record<string, string[]>>)
+			.map(([row, fieldErrors]) => `Row ${row}: ${Object.values(fieldErrors).flat().join(" ")}`)
+			.join(" ");
+	}
 	if (data && typeof data === "object"){
 		const messages = Object.values(data).flat().filter(message => typeof message === "string");
 		if (messages.length){

@@ -51,9 +51,11 @@ describe("ExpenseFormModal", () => {
 			expenseDate: "2026-09-01T13:00"
 		});
 		render(
-			<ModalContext.Provider value={editingRent}>
-				<ExpenseFormModal />
-			</ModalContext.Provider>
+			<ExpenseDataContext.Provider value={expenseDataContextValue()}>
+				<ModalContext.Provider value={editingRent}>
+					<ExpenseFormModal />
+				</ModalContext.Provider>
+			</ExpenseDataContext.Provider>
 		);
 
 		await userEvent.click(screen.getByRole("button", { name: "Save expense" }));
