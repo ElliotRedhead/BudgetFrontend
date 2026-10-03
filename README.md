@@ -39,7 +39,7 @@ Then open http://localhost:3000 and log in as `demo@example.com` / `demo-budget-
 
 ### On its own
 
-Requires Node 24, and the API running on http://localhost:8000 (see [BudgetBackend](https://github.com/ElliotRedhead/BudgetBackend#api-only-without-docker)).
+Requires Node 24 (`nvm use` picks it up from `.nvmrc`), and the API running on http://localhost:8000 (see [BudgetBackend](https://github.com/ElliotRedhead/BudgetBackend#api-only-without-docker)).
 
 ```sh
 cp .env.template .env   # VITE_API_ROOT points at the API
